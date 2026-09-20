@@ -22,13 +22,6 @@
 .marcaPequena { transform: translateY(3px) scale(.6); }
 @media (prefers-reduced-motion: reduce) { .marca { transition: none; } }
 
-/* El logo conserva su hueco en el header y se desplaza hasta la división del catálogo. */
-.marca { translate: 0 0; transition: transform 360ms cubic-bezier(.22,1,.36,1), translate 480ms cubic-bezier(.22,1,.36,1); }
-@media(min-width:768px) {
-  .marcaCatalogo { translate: calc(var(--ancho-panel-catalogo) - max(0px, (100vw - 1152px) / 2) - 24px - 62px) 0; }
-}
-@media(prefers-reduced-motion:reduce) { .marca { transition: none; } }
-
 /* En Nosotros y Contacto la chapa se revela sin mover su zona de hover. */
 .marcaRecortada {
   --tamano-logo: 96px;
@@ -47,7 +40,6 @@
   transition: transform 360ms cubic-bezier(.22,1,.36,1);
 }
 @media(min-width:640px) { .marcaRecortada { --tamano-logo: 124px; } }
-/* GSAP reproduce la misma secuencia hacia delante y en reversa. */
-.marcaRecortada { transition: translate 480ms cubic-bezier(.22,1,.36,1); }
-.marcaRecortada .logo { transition: none; }
-@media(prefers-reduced-motion:reduce) { .marcaRecortada { transition: none; } }
+/* Sin transición CSS: la secuencia de revelado la reproduce GSAP, hacia delante
+   y en reversa, y una transición encima competiría con ella. */
+.marcaRecortada, .marcaRecortada .logo { transition: none; }
