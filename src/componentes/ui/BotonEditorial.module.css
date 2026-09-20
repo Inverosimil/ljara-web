@@ -1,0 +1,13 @@
+.boton { display: inline-flex; align-items: center; justify-content: center; gap: .7rem; min-height: 44px; padding: .5rem 0; border: 0; background: transparent; color: var(--color-tinta); font-family: var(--font-editorial); font-style: italic; font-size: 19px; font-weight: 400; cursor: pointer; transition: color 160ms ease; }
+.boton:hover { color: var(--color-rojo-600); }
+.boton:focus-visible { outline: 3px solid var(--color-rojo-500); outline-offset: 4px; border-radius: 4px; }
+.icono { display: inline-flex; flex-shrink: 0; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) { .boton { transition: none; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .crecer { transition: transform 200ms ease-out; }
+  .boton:focus-visible .crecer { transform: scale(1.12); }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .boton:hover .crecer { transform: scale(1.12); }
+}

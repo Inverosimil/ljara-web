@@ -1,0 +1,7 @@
+.contenedor { padding-top: 26px; font-family: var(--font-archivo); font-style: normal; }
+.controles { display: flex; flex-direction: column; gap: 18px; margin-top: 12px; }
+.cantidad { width: 100%; border: 1px solid #d5d5d5; border-radius: 28px; overflow: hidden; padding: 4px; }
+.cantidad input { flex: 1; width: 0; border: 0; background: transparent; }
+.cantidad button { border: 0; background: var(--color-crema); border-radius: 50%; }
+.controles > span { width: 100%; }
+.agregar { min-height: 54px; text-transform: none; font-family: var(--font-archivo); font-weight: 750; font-size: 17px; }

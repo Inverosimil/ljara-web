@@ -1,0 +1,66 @@
+.pagina { background: var(--color-papel); color: var(--color-tinta); font-family: var(--font-archivo); font-style: normal; }
+.portada, .historia, .cierre { max-width: 1320px; margin-inline: auto; padding-inline: clamp(24px, 4vw, 60px); }
+.pagina h1, .pagina h2 { font-family: var(--font-archivo); font-style: normal; font-weight: 850; letter-spacing: -.045em; text-wrap: balance; }
+.pagina h1 { font-size: clamp(38px, 4.4vw, 62px); line-height: 1.22; margin-bottom: 26px; }
+.pagina h2 { font-size: clamp(26px, 2.9vw, 38px); line-height: 1.25; margin: 16px 0; }
+.pagina p:not(.nota) { font-size: 16px; line-height: 1.55; }
+.rojo, .azul, .amarillo { padding: .015em .15em .07em; border-radius: 8px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.rojo { background: var(--color-rojo-500); color: var(--color-crema); }
+.azul { background: var(--color-tinta); color: var(--color-crema); }
+.amarillo { background: var(--color-oro); }
+.portada { width: 100%; max-width: none; display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(28px, 4vw, 56px); align-items: stretch; padding-top: clamp(28px, 5vh, 56px); padding-bottom: clamp(32px, 6vh, 72px); min-height: calc(100dvh - 72px); box-sizing: border-box; }
+.presentacion { display: flex; flex-direction: column; justify-content: center; padding-block: 35px; }
+.presentacion p { max-width: 440px; }
+.portadaVisual { position: relative; min-height: 0; }
+.fotoPortada { position: relative; height: 100%; min-height: 0; border-radius: 12px; overflow: hidden; }
+.pagina img { object-fit: cover; user-select: none; }
+.nota { position: relative; width: fit-content; background: var(--color-crema); padding: 20px 25px; font-size: 27px; font-weight: 500; line-height: 1.05; text-align: center; box-shadow: 1px 5px 13px rgb(0 0 0 / 12%); transform: rotate(-7deg); margin: 32px auto 8px; }
+.nota::before { content: ""; position: absolute; width: 58px; height: 20px; background: rgb(210 190 136 / 42%); left: 20px; top: -9px; transform: rotate(-7deg); }
+.nota::after { content: ""; display: block; width: 65%; height: 2px; background: var(--color-rojo-500); margin: 10px 0 0 auto; transform: rotate(-4deg); }
+.portadaVisual > .nota { position: absolute; top: 6%; left: 9%; margin: 0; }
+.historia { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 30px; padding-block: 16px 40px; }
+.foto { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; }
+.momento > p:not(.nota), .momento > h2 { margin-inline: 14px; }
+.collage { position: relative; }
+.polaroid { position: absolute; width: 38%; right: -16px; bottom: -30px; padding: 9px 9px 12px; background: var(--color-crema); transform: rotate(9deg); box-shadow: 1px 4px 10px rgb(0 0 0 / 16%); z-index: 1; }
+.polaroid > div { position: relative; aspect-ratio: 1; overflow: hidden; }
+.polaroid figcaption { font-size: 19px; line-height: 1; text-align: center; margin-top: 8px; }
+.collage + h2 { padding-top: 6px; }
+.cierre { display: grid; grid-template-columns: .75fr 1.65fr .75fr; gap: 28px; align-items: center; padding-block: 18px 40px; }
+.fotoCierre { position: relative; height: 260px; border-radius: 12px; overflow: hidden; }
+.invitacion { text-align: center; }
+.invitacion h2 { font-size: clamp(29px, 3.1vw, 41px); }
+.invitacion p { max-width: 450px; margin: 22px auto; }
+.cierreVisual { position: relative; }
+.cierreVisual .nota { position: absolute; bottom: 12px; left: -25px; font-size: 24px; padding: 18px; }
+@media (hover: hover) { .nota:hover, .polaroid:hover { box-shadow: 1px 8px 18px rgb(0 0 0 / 17%); } }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .pagina img { transition: transform 650ms cubic-bezier(.22,1,.36,1); }
+  .foto:hover img, .fotoPortada:hover img, .fotoCierre:hover img, .polaroid:hover img { transform: scale(1.035); }
+  .nota, .polaroid { transition: box-shadow 220ms ease; }
+}
+@media (min-width: 1100px) { .foto { aspect-ratio: .95; } }
+@media (max-width: 1000px) { .historia { gap: 22px; } .pagina p:not(.nota) { font-size: 15px; } .momento > p:not(.nota), .momento > h2 { margin-inline: 4px; } .cierre { gap: 20px; } .polaroid { width: 36%; right: -8px; bottom: -10px; } .polaroid figcaption { font-size: 16px; } }
+@media (max-width: 767px) {
+  .portada { grid-template-columns: 1fr; gap: 16px; padding-top: 32px; }
+  .presentacion { padding-block: 20px 10px; }
+  .pagina h1 { font-size: clamp(36px, 7vw, 54px); }
+  .presentacion p { max-width: none; }
+  .portadaVisual { min-height: 0; }
+  .fotoPortada { height: clamp(260px, 42vh, 390px); aspect-ratio: auto; }
+  .historia { grid-template-columns: 1fr; gap: 34px; }
+  .foto { aspect-ratio: 1.2; }
+  .pagina h2 { font-size: 32px; }
+  .momento > p:not(.nota) { font-size: 16px; }
+  .polaroid { width: 30%; bottom: -22px; right: 8px; }
+  .collage + h2 { padding-top: 18px; }
+  .cierre { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .invitacion { grid-column: 1 / -1; grid-row: 1; padding-bottom: 16px; }
+  .fotoCierre { height: 220px; }
+  .cierreVisual .nota { font-size: 21px; left: -16px; padding: 16px; }
+  .portadaVisual > .nota { font-size: 23px; padding: 15px 20px; }
+}
+.pagina h1 { font-size: clamp(32px, 3.6vw, 50px); text-wrap: initial; }
+.pagina h1 .rojo { white-space: nowrap; }
+.foto { aspect-ratio: .98; }
+@media (max-width: 767px) { .pagina h1 { font-size: clamp(29px, 7.6vw, 50px); } .foto { aspect-ratio: 1.2; } }

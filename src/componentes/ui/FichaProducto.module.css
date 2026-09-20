@@ -1,0 +1,16 @@
+.ficha { position: relative; display: flex; flex-direction: column; height: 100%; background: white; border-radius: 12px; font-family: var(--font-archivo); font-style: normal; color: var(--color-tinta); }
+.abrir { position: absolute; inset: 0; z-index: 2; border-radius: inherit; cursor: pointer; }
+.abrir:focus-visible { outline: 3px solid var(--color-rojo-500); outline-offset: 2px; }
+.foto { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: clamp(180px,20vw,290px); overflow: hidden; border-radius: 12px 12px 0 0; }
+.foto img { object-fit: contain; padding: 30px 18px 18px; }
+.litraje { position: absolute; top: 14px; left: 14px; padding: 6px 10px; border-radius: 8px; background: var(--color-crema); font-size: 13px; font-weight: 600; }
+.info { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 8px 20px 18px; margin-top: auto; }
+.info h3 { font-weight: 800; font-size: 18px; line-height: 1.25; letter-spacing: -.025em; }
+.info p { margin-top: 5px; color: var(--color-neutro-600); font-size: 14px; }
+.accion { position: relative; z-index: 3; flex-shrink: 0; }
+.accion .flecha { width: 44px; height: 44px; min-height: 44px; padding: 0; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) { .foto img { transition: transform 260ms ease; } .ficha:has(.abrir:hover) .foto img { transform: scale(1.035); } }
+@media (max-width: 600px) { .foto { height: 170px; } .info { padding: 8px 12px 14px; gap: 6px; } .info h3 { font-size: 14px; } .info p { font-size: 12px; } .accion .flecha { width: 36px; height: 36px; min-height: 36px; } .litraje { left: 10px; top: 14px; font-size: 12px; padding: 5px 7px; } }
+
+.ficha > [role="status"] { top: -7px; right: -7px; }
+.ficha > [role="status"] > span { min-width: 54px; height: 54px; font-size: 27px; }

@@ -1,0 +1,25 @@
+/* Retraer 1px la sombra evita que el antialiasing la revele en reposo. */
+.marco { position: relative; isolation: isolate; display: inline-flex; vertical-align: middle; }
+.marco::before { content: ""; position: absolute; inset: 1px; z-index: -1; border-radius: inherit; background: var(--color-tinta); transform: translate(0, 0); pointer-events: none; transition: transform 160ms ease-out; }
+.marco:has(:disabled)::before { display: none; }
+.superficie { cursor: pointer; position: relative; transition: transform 110ms ease-out, background-color 160ms ease; }
+@media (hover: hover) { .marco:hover:not(:has(:disabled))::before { transform: translate(3px, 3px); } }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .marco:not(.sinSombra):hover > .superficie:not(:disabled):not(:active) { transform: translate(-1px, -1px); }
+}
+.marco:has(:focus-visible)::before, .marco:has(:active):not(:has(:disabled))::before { transform: translate(3px, 3px); }
+.superficie:active:not(:disabled) { transform: translate(3px, 3px); }
+.superficie:disabled { opacity: .45; cursor: not-allowed; }
+.superficie > svg { flex-shrink: 0; transform-origin: center; }
+@media (prefers-reduced-motion: no-preference) {
+  .superficie > svg { transition: transform 200ms ease-out; }
+  .superficie:focus-visible:not(:disabled) > svg { transform: scale(1.12); }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .marco:hover > .superficie:not(:disabled) > svg { transform: scale(1.12); }
+}
+@media (prefers-reduced-motion: reduce) { .superficie, .marco::before { transition: none; } }
+
+/* Sin sombra tampoco hay desplazamiento hacia una sombra inexistente. */
+.marco.sinSombra::before { display: none; }
+.marco.sinSombra > .superficie:not(:disabled) { transform: none; }

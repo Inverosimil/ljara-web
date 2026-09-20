@@ -1,0 +1,29 @@
+.panel { position: absolute; inset: 0 0 0 auto; display: flex; flex-direction: column; width: min(540px,100%); background: var(--color-papel); font-family: var(--font-archivo); font-style: normal; box-shadow: -12px 0 48px #0002; }
+.encabezado { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 24px; background: var(--color-tinta); color: var(--color-crema); }
+.encabezado h2 { font-size: 28px; line-height: 1.15; font-weight: 800; letter-spacing: -.035em; }
+.encabezado p { font-size: 14px; margin-top: 7px; }
+.cerrar { width: 44px; height: 44px; display: grid; place-items: center; cursor: pointer; border-radius: 50%; flex-shrink: 0; }
+.cerrar:hover { background: #ffffff18; }
+.lista { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; padding-inline: 20px; }
+.fila { display: grid; grid-template-columns: 58px minmax(0,1fr) 136px; align-items: center; gap: 14px; min-height: 128px; padding-block: 16px; border-bottom: 1px solid #dcd8d0; }
+.fila:last-child { border-bottom: 0; }
+.foto { position: relative; display: grid; place-items: center; height: 90px; }
+.foto img { object-fit: contain; }
+.descripcion h3 { font-size: 16px; font-weight: 750; line-height: 1.25; letter-spacing: -.025em; }
+.descripcion p { color: #696d72; font-size: 13px; line-height: 1.4; margin-top: 5px; }
+.controles { display: flex; flex-direction: column; align-items: flex-end; }
+.cantidad { gap: 0; width: 136px; }
+.cantidad button { width: 40px; height: 40px; border: 0; border-radius: 12px; background: var(--color-crema); }
+.cantidad input { width: 52px; height: 40px; border: 0; background: transparent; font-family: var(--font-archivo); font-weight: 700; }
+.utilidades { display: flex; align-items: center; justify-content: flex-end; gap: 12px; font-size: 12px; color: #696d72; }
+.quitar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; color: var(--color-tinta); }
+.quitar:hover { background: #e4252010; color: var(--color-rojo-600); }
+.pie { flex-shrink: 0; border-top: 1px solid #dcd8d0; padding: 20px 24px 24px; background: var(--color-crema); }
+.resumen { font-size: 18px; font-weight: 750; }
+.aviso { color: #696d72; font-size: 13px; margin-top: 6px; }
+.revisar { font-family: var(--font-archivo); font-weight: 750; text-transform: none; min-height: 54px; }
+.pie button { font-family: var(--font-archivo); text-transform: none; font-weight: 500; font-size: 13px; text-decoration: none; }
+.panel button:focus-visible { outline: 2px solid var(--color-rojo-500); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .quitar, .cerrar, .cantidad button { transition: background-color 160ms,color 160ms,transform 160ms; } .quitar:hover svg { transform: scale(1.1); } .cantidad button:active { transform: scale(.93); } }
+@media(max-width:420px) { .encabezado { padding: 18px; } .lista { padding-inline: 14px; } .fila { grid-template-columns: 44px minmax(0,1fr) 112px; gap: 9px; } .descripcion h3 { font-size: 14px; } .cantidad { width: 112px; } .cantidad button { width: 36px; } .cantidad input { width: 40px; } .pie { padding: 16px; } }
+@media(max-height:650px) { .encabezado { padding-block: 12px; } .pie { padding-block: 12px; } }

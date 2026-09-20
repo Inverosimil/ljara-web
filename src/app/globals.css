@@ -1,0 +1,296 @@
+@import "tailwindcss" source("../");
+
+/* Design tokens L.Jara expuestos como utilidades de Tailwind.
+ * Fuente de verdad: ../../../brand/tokens/tokens.json
+ * Los colores estan extraidos del PDF original del logo. */
+@theme {
+  /* --- marca --- */
+  --color-rojo-50: #fef6f6;
+  --color-rojo-100: #fce9e8;
+  --color-rojo-200: #f8cbc9;
+  --color-rojo-300: #f2a4a0;
+  --color-rojo-400: #ea6760;
+  --color-rojo-500: #e1261c;
+  --color-rojo-600: #c32118;
+  --color-rojo-700: #a41c14;
+  --color-rojo-800: #821610;
+  --color-rojo-900: #64110c;
+
+  /* rampa tintada con el azul de marca, no gris puro */
+  --color-neutro-50: #f9f9fa;
+  --color-neutro-100: #f2f2f3;
+  --color-neutro-200: #e3e5e6;
+  --color-neutro-300: #c8cacc;
+  --color-neutro-400: #abafb2;
+  --color-neutro-500: #8e9398;
+  --color-neutro-600: #6f767b;
+  --color-neutro-700: #50585e;
+  --color-neutro-800: #313a42;
+  --color-neutro-900: #0f1a23;
+  --color-neutro-950: #0a1117;
+
+  --color-tinta: #0f1a23;
+  --color-crema: #f5f2ea;
+
+  /* --- acentos propios de cada propuesta ---
+   * El rojo, la tinta y el crema son de marca y no se tocan. Estos son colores
+   * que cada propuesta agrega encima para darse carácter. */
+  --color-oro: #f2b705;
+  --color-pop-cian: #12b5c9;
+  --color-arcade-verde: #39ff88;
+  --color-arcade-violeta: #7b3ff2;
+  --color-ruta-naranja: #ff7a00;
+
+  /* --- tipografia (una pareja por propuesta) --- */
+  --font-inter: var(--fuente-inter), system-ui, sans-serif;
+  --font-bungee: var(--fuente-bungee), Impact, sans-serif;
+  --font-archivo: var(--fuente-archivo), system-ui, sans-serif;
+  --font-pixel: var(--fuente-pixel), "Courier New", monospace;
+  --font-chakra: var(--fuente-chakra), system-ui, sans-serif;
+  --font-black: var(--fuente-black), Impact, sans-serif;
+  --font-editorial: Georgia, "Times New Roman", serif;
+  --font-placa: var(--fuente-placa), Impact, sans-serif;
+  --font-condensada: var(--fuente-condensada), "Arial Narrow", sans-serif;
+
+  /* --- sombras tintadas con el azul de marca (solo la UI del design system) --- */
+  --shadow-lj-sm: 0 1px 2px rgba(15, 26, 35, 0.06);
+  --shadow-lj-md: 0 2px 8px rgba(15, 26, 35, 0.08);
+  --shadow-lj-lg: 0 8px 24px rgba(15, 26, 35, 0.12);
+
+  /* ===== SISTEMA DEL SITIO (lenguaje Fanzine) =====
+   * Todo el sitio se dibuja con estas tres piezas y nada más: borde macizo,
+   * sombra dura sin difuminar y papel. Si algo necesita otro tratamiento, es
+   * señal de que el componente está mal planteado. */
+  --color-papel: #efebe3;
+
+  /* sombras duras: el desplazamiento es el único que se usa en todo el sitio */
+  --shadow-dura-sm: 3px 3px 0 0 var(--color-tinta);
+  --shadow-dura: 6px 6px 0 0 var(--color-tinta);
+  --shadow-dura-lg: 9px 9px 0 0 var(--color-tinta);
+  --shadow-dura-rojo: 6px 6px 0 0 var(--color-rojo-500);
+  --shadow-dura-oro: 6px 6px 0 0 var(--color-oro);
+  --shadow-dura-cian: 6px 6px 0 0 var(--color-pop-cian);
+}
+
+/* Alto del encabezado pegado, en un solo lugar.
+ *
+ * Lo usan dos piezas: el propio encabezado, que se lo fija, y la barra de
+ * filtros del catálogo, que se pega justo debajo. Con un número suelto en cada
+ * sitio bastaba con cambiar un relleno para que la barra quedara medio tapada
+ * —y el encabezado la tapa, porque va por encima—. Acá el borde de 3px queda
+ * fuera: quien se pega debajo suma `calc(... + 3px)`. */
+:root {
+  --alto-encabezado: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --alto-encabezado: 4.5rem;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* el encabezado es sticky: sin este margen, al saltar a un ancla la sección
+ * queda escondida detrás de la barra */
+[id] {
+  scroll-margin-top: calc(var(--alto-encabezado) + 2rem);
+}
+
+body {
+  font-family: var(--font-inter);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Texturas y efectos de las propuestas. Cada una se usa en una sola página,
+ * pero viven acá porque son CSS que Tailwind no cubre con utilidades.
+ * ------------------------------------------------------------------------- */
+
+/* 1 · Feria y 2 · Fanzine — franjas diagonales de toldo (banderines y marcas) */
+.franjas-toldo {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #e1261c 0 22px,
+    #c32118 22px 44px
+  );
+}
+
+/* 1 · Feria — alfombra de tapas del propio logo en el hero */
+.patron-chapas {
+  background-image: url("/marca/logo-ljara-mono.svg");
+  background-size: 88px 88px;
+  background-repeat: repeat;
+}
+
+/* 1 · Feria y 2 · Fanzine — trama de puntos del catálogo */
+.halftone {
+  background-image: radial-gradient(
+    rgba(15, 26, 35, 0.16) 22%,
+    transparent 23%
+  );
+  background-size: 10px 10px;
+}
+
+/* 3 · Arcade — sombra del titular. En móvil el desplazamiento grande sobre una
+ * pixelada chica se lee como texto borroso, así que arranca corta y crece. */
+.sombra-arcade {
+  text-shadow:
+    2px 2px 0 var(--color-rojo-500),
+    4px 4px 0 var(--color-arcade-violeta);
+}
+@media (min-width: 640px) {
+  .sombra-arcade {
+    text-shadow:
+      4px 4px 0 var(--color-rojo-500),
+      8px 8px 0 var(--color-arcade-violeta);
+  }
+}
+
+/* 3 · Arcade — rejilla de monitor CRT y bordes escalonados tipo pixel */
+.rejilla-crt {
+  background-image:
+    linear-gradient(rgba(57, 255, 136, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 136, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.22) 0 2px,
+    transparent 2px 4px
+  );
+}
+
+/* 2 · Fanzine — grano grueso de fotocopia mal calibrada */
+.fotocopia {
+  background-image:
+    radial-gradient(rgba(15, 26, 35, 0.35) 18%, transparent 19%),
+    radial-gradient(rgba(15, 26, 35, 0.22) 14%, transparent 15%);
+  background-size:
+    5px 5px,
+    9px 9px;
+  background-position:
+    0 0,
+    3px 4px;
+}
+/* trozo de cinta adhesiva sobre un recorte */
+.cinta {
+  background: rgba(242, 183, 5, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(15, 26, 35, 0.18);
+}
+
+/* 4 · Rutero — franja reflectante de camión y textura de placa */
+.franja-peligro {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-tinta) 0 18px,
+    var(--color-ruta-naranja) 18px 36px
+  );
+}
+.placa-metal {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    transparent 32%,
+    rgba(0, 0, 0, 0.18) 100%
+  );
+}
+
+/* ---------------------------------------------------------------------------
+ * Presentación: al imprimir sale una lámina por página apaisada. De ahí salen
+ * el PDF y, si hace falta, el PPT.
+ * ------------------------------------------------------------------------- */
+.solo-imprimir {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: 297mm 167mm; /* 16:9 sobre el ancho de un A4 apaisado */
+    margin: 0;
+  }
+  .no-imprimir {
+    display: none !important;
+  }
+  .solo-imprimir {
+    display: block;
+  }
+  .lamina-impresa {
+    width: 297mm;
+    break-after: page;
+  }
+  .lamina-impresa:last-child {
+    break-after: auto;
+  }
+  /* los fondos de color son el diseño, no decoración */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Refinamiento público: foco consistente, lectura y movimiento opcional. */
+.sitio-publico :where(a, button, input, textarea, summary):focus-visible {
+  outline: 3px solid var(--color-rojo-600);
+  outline-offset: 4px;
+}
+.sitio-publico :where(.bg-tinta, .bg-rojo-600) :where(a, button, input, textarea, summary):focus-visible {
+  outline-color: var(--color-crema);
+}
+.sitio-publico :where(p) { text-wrap: pretty; }
+.sitio-publico :where(button, a, input) { -webkit-tap-highlight-color: transparent; }
+.sitio-publico .text-neutro-600 { color: var(--color-neutro-700); }
+.sitio-publico .entrada-suave { animation: entrada-suave 420ms ease-out both; }
+.sitio-publico .entrada-menu { animation: entrada-suave 150ms ease-out both; }
+@keyframes entrada-suave {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sitio-publico .entrada-suave, .sitio-publico .entrada-menu { animation: none; }
+}
+
+/* La serif editorial reemplaza Special Elite; los roles de interfaz conservan su estilo recto. */
+@layer utilities {
+  .font-editorial { font-style: italic; }
+  .font-black, .font-archivo, .font-inter { font-style: normal; }
+}
+
+/* Barras discretas en todo el sitio, incluidos paneles con scroll propio. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-rojo-600) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track, *::-webkit-scrollbar-corner { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--color-rojo-600); border-radius: 999px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--color-rojo-500); }
+*::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+
+html.scroll-superpuesto { scrollbar-width: none; }
+html.scroll-superpuesto::-webkit-scrollbar { display: none; }
+.scroll-pagina-thumb { position: fixed; top: 0; right: 2px; z-index: 100; width: 6px; border-radius: 999px; background: var(--color-rojo-600); cursor: grab; touch-action: none; user-select: none; }
+.scroll-pagina-thumb:active { cursor: grabbing; }
+
+@media (min-width: 768px) {
+  html.scroll-superpuesto [data-scroll-principal] { scrollbar-width: none; }
+  html.scroll-superpuesto [data-scroll-principal]::-webkit-scrollbar { display: none; }
+}
+
+.sitio-publico { --ancho-panel-catalogo: 280px; }
+@media(min-width:768px) and (max-width:1050px) { .sitio-publico { --ancho-panel-catalogo: 230px; } }

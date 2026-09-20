@@ -1,0 +1,31 @@
+.seccion { margin-top: 3rem; font-family: var(--font-archivo); color: var(--color-tinta); }
+.lista { display: grid; gap: 1.25rem; margin-top: 1.5rem; }
+.tarjeta { padding: clamp(1.25rem, 3vw, 2rem); border-radius: 20px; background: var(--color-papel); }
+.muestra { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; margin-top: 1.5rem; padding-bottom: 4px; }
+.enlace { display: inline-flex; align-items: center; justify-content: center; gap: .65rem; min-height: 44px; padding: .5rem 0; border: 0; background: transparent; color: var(--color-tinta); font-family: var(--font-archivo); font-size: 16px; font-weight: 600; text-decoration: none; cursor: pointer; transition: color 160ms ease; }
+.enlace svg { flex-shrink: 0; transition: transform 160ms ease-out; }
+.limpio:hover svg { transform: translateX(3px); }
+.acento { color: var(--color-rojo-600); }
+.acento:hover svg { transform: translate(2px, -2px); }
+.rotulo { font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.rotulo:hover { color: var(--color-rojo-600); }
+.rotulo:hover svg { transform: translateX(2px); }
+.enlace:active svg { transform: translate(0, 0); }
+.conversacion { font-weight: 500; }
+.conversacion svg { color: var(--color-rojo-600); }
+.conversacion:hover svg { transform: translateY(-2px); }
+.conversacion:active svg { transform: none; }
+.editorial { font-family: Georgia, serif; font-style: italic; font-weight: 400; font-size: 19px; }
+.editorial:hover svg { transform: translateX(3px); }
+.editorial:active svg { transform: none; }
+.emergente { overflow: hidden; }
+.emergente svg { clip-path: inset(0 100% 0 0); transform: translateX(-8px); transition: clip-path 180ms ease, transform 180ms ease; }
+.emergente:hover svg, .emergente:focus-visible svg { clip-path: inset(0); transform: translateX(0); }
+.emergente:active svg { transform: translateX(-2px); }
+.palabras { font-weight: 400; transition: color 160ms ease, transform 110ms ease; }
+.palabras strong { font-weight: 700; }
+.palabras:hover { color: var(--color-rojo-600); }
+.palabras:active { transform: translateY(1px); }
+.enlace:focus-visible { outline: 3px solid var(--color-rojo-500); outline-offset: 4px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { .enlace, .enlace svg { transition: none; } .enlace:hover svg { transform: none; } }
+@media (max-width: 480px) { .muestra { align-items: flex-start; flex-direction: column; } }

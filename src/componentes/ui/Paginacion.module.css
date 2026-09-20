@@ -1,0 +1,17 @@
+/* Retraer 1px la sombra evita que el antialiasing la revele en reposo. */
+.marco { position: relative; isolation: isolate; display: inline-flex; border-radius: 50%; vertical-align: middle; }
+.marco::before { content: ""; position: absolute; inset: 1px; z-index: -1; border-radius: inherit; background: var(--color-tinta); pointer-events: none; transform: translate(0,0); }
+.marco:has(:disabled)::before { display: none; }
+.boton { position: relative; display: grid; place-items: center; width: var(--tamano-pagina,44px); height: var(--tamano-pagina,44px); border-radius: inherit; border: 0; background: white; color: var(--color-tinta); font: 700 14px/1 var(--font-archivo); font-variant-numeric: tabular-nums; cursor: pointer; }
+.activo { background: var(--color-rojo-600); color: var(--color-crema); }
+.boton:disabled { color: color-mix(in srgb,var(--color-tinta) 30%,transparent); cursor: not-allowed; }
+.boton:focus-visible { outline: 2px solid var(--color-rojo-600); outline-offset: 4px; }
+.marco:has(:focus-visible)::before, .marco:has(:active):not(:has(:disabled))::before { transform: translate(2px,2px); }
+.boton:active:not(:disabled) { transform: translate(2px,2px); }
+@media (hover:hover) { .marco:hover:not(:has(:disabled))::before { transform: translate(2px,2px); } .boton:hover:not(:disabled) { background: var(--color-rojo-600); color: var(--color-crema); } }
+@media (prefers-reduced-motion:no-preference) {
+  .marco::before { transition: transform 160ms ease-out; }
+  .boton { transition: transform 110ms ease-out, background-color 160ms ease, color 160ms ease; }
+  .boton svg { transition: transform 160ms ease-out; }
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) { .marco:hover > .boton:not(:disabled):not(:active) { transform: translate(-.5px,-.5px); } .boton:hover:not(:disabled) svg { transform: scale(1.06); } }

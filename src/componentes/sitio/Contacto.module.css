@@ -1,0 +1,83 @@
+.pagina { background: var(--color-papel); color: var(--color-tinta); font-family: var(--font-archivo); font-style: normal; }
+.hero, .cobertura { max-width: 1320px; margin-inline: auto; padding-inline: clamp(24px, 3.8vw, 56px); display: grid; align-items: center; }
+.hero { grid-template-columns: .85fr 1.15fr; gap: 28px; padding-block: 34px 42px; }
+.texto { position: relative; z-index: 1; }
+.pagina h1, .pagina h2 { font-family: var(--font-archivo); font-weight: 850; font-style: normal; letter-spacing: -.045em; line-height: 1.15; }
+.pagina h1 { font-size: clamp(34px, 4.2vw, 58px); margin-bottom: 32px; }
+.rojo, .amarillo { padding: .02em .15em .08em; border-radius: 8px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.rojo { background: var(--color-rojo-500); color: var(--color-crema); white-space: nowrap; font-size: .83em; }
+.amarillo { background: var(--color-oro); }
+.bajada { font-size: clamp(18px, 2vw, 24px); line-height: 1.4; margin-bottom: 30px; }
+.acciones { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
+.acciones > span { max-width: 100%; }
+.acciones button, .acciones span > a { font-family: var(--font-archivo); text-transform: none; font-weight: 750; font-size: clamp(15px, 1.6vw, 20px); }
+.acciones button:disabled { opacity: 1; cursor: not-allowed; }
+.pendiente { color: var(--color-neutro-600, #61666a); font-size: 13px; line-height: 1.4; max-width: 340px; margin-top: -12px; }
+.visual { position: relative; }
+.fotoHero, .fotoBarrio { position: relative; overflow: hidden; border-radius: 12px; }
+.fotoHero { aspect-ratio: .87; }
+.pagina img { object-fit: cover; user-select: none; }
+.nota { position: absolute; top: 6%; right: 0; margin: 0; background: var(--color-crema); padding: 24px 32px; font-size: clamp(26px, 3vw, 38px); font-weight: 500; line-height: 1.05; text-align: center; transform: rotate(-7deg); box-shadow: 1px 5px 13px rgb(0 0 0 / 12%); }
+.nota::before { content: ""; position: absolute; width: 60px; height: 20px; background: rgb(210 190 136 / 42%); top: -9px; left: 35%; transform: rotate(-5deg); }
+.nota::after { content: ""; display: block; width: 70%; height: 2px; margin: 12px 0 0 auto; background: var(--color-rojo-500); transform: rotate(-4deg); }
+.cobertura { grid-template-columns: .75fr 1.25fr; gap: 42px; padding-block: 30px 52px; }
+.pagina h2 { font-size: clamp(36px, 4.2vw, 56px); margin-bottom: 26px; }
+.cobertura p:not(.firma p) { font-size: 17px; line-height: 1.55; margin-bottom: 22px; }
+.cobertura .comunas { font-size: 16px; font-weight: 550; }
+.fotoBarrio { aspect-ratio: 1.17; }
+.firma { display: flex; align-items: center; gap: 22px; margin-top: 38px; }
+.firma p { font-size: 28px; line-height: 1; transform: rotate(-6deg); }
+.consulta summary { list-style: none; cursor: pointer; display: inline-flex; gap: 12px; align-items: center; color: var(--color-rojo-600); font-weight: 700; font-size: 17px; }
+.consulta summary::-webkit-details-marker { display: none; }
+.consulta summary:focus-visible { outline: 2px solid var(--color-rojo-500); outline-offset: 5px; }
+.consulta[open] p { margin-top: 16px; font-size: 14px; }
+@media (hover: hover) { .nota:hover { box-shadow: 1px 8px 18px rgb(0 0 0 / 17%); } }
+@media (prefers-reduced-motion: no-preference) {
+ .pagina img { transition: transform 650ms cubic-bezier(.22,1,.36,1); }
+ .nota { transition: box-shadow 220ms ease; }
+ .consulta svg { transition: transform 200ms ease; }
+ .consulta summary:hover svg { transform: scale(1.12); }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) { .fotoHero:hover img, .fotoBarrio:hover img { transform: scale(1.035); } }
+@media (max-width: 767px) {
+ .hero, .cobertura { grid-template-columns: 1fr; gap: 30px; }
+ .hero { padding-top: 56px; }
+ .pagina h1 { font-size: clamp(32px, 6.5vw, 46px); }
+ .rojo { white-space: normal; line-height: 1.45; }
+ .fotoHero { aspect-ratio: 1; }
+ .nota { font-size: 28px; padding: 20px 26px; }
+ .cobertura { padding-block: 24px 40px; }
+ .fotoBarrio { aspect-ratio: 1.2; }
+ .firma { margin-top: 28px; }
+}
+@media (min-width: 768px) { .pagina h1 { font-size: clamp(42px, 5.5vw, 70px); } }
+@media (max-width: 767px) { .visual { padding-top: 20px; } .nota { top: 0; font-size: 22px; padding: 14px 20px; } }
+@media (min-width: 768px) { .hero { grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); } }
+
+/* Cobertura: imagen primero, texto a la derecha. */
+@media (min-width: 768px) {
+  .cobertura { grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); }
+  .cobertura > div:first-child { grid-column: 2; grid-row: 1; }
+  .cobertura > .fotoBarrio { grid-column: 1; grid-row: 1; }
+}
+@media (max-width: 767px) { .cobertura > .fotoBarrio { grid-row: 1; } }
+
+/* Portada editorial: dos retratos enmarcan la conversación. */
+.hero { max-width: 1600px; grid-template-columns: minmax(0, .95fr) minmax(0, 1.25fr) minmax(0, .95fr); gap: clamp(24px, 4vw, 64px); padding: clamp(28px, 5vh, 56px) 24px clamp(32px, 6vh, 72px); align-items: stretch; min-height: calc(100dvh - 72px); box-sizing: border-box; }
+.retrato { position: relative; height: auto; min-height: 0; align-self: stretch; overflow: hidden; border-radius: 12px; }
+.retratoDerecho { height: auto; align-self: stretch; }
+.hero .texto { min-width: 0; padding-top: 48px; align-self: center; }
+.hero h1 { font-size: clamp(34px, 4.1vw, 66px); line-height: 1.06; margin-bottom: 32px; }
+.hero .bajada { font-size: clamp(18px, 1.9vw, 28px); }
+.firmaHero { font-size: clamp(28px, 2.6vw, 38px); line-height: 1.05; text-align: right; width: fit-content; margin: 32px 0 0 auto; transform: rotate(-7deg); }
+.firmaHero::after { content: ""; display: block; background: var(--color-oro); width: 62%; height: 2px; margin: 10px 0 0 auto; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) { .retrato:hover img { transform: scale(1.035); } }
+@media (max-width: 1000px) and (min-width: 768px) { .hero { gap: 24px; grid-template-columns: minmax(0,.75fr) minmax(0,1.4fr) minmax(0,.75fr); } .hero h1 { font-size: 40px; } .hero .acciones button { padding-inline: 16px; font-size: 14px; } }
+@media (max-width: 767px) {
+ .hero { grid-template-columns: 1fr 1fr; gap: 16px; padding: 32px 20px 40px; min-height: calc(100dvh - 56px); align-content: center; }
+ .hero .texto { grid-column: 1 / -1; grid-row: 1; padding: 0; }
+ .hero h1 { font-size: clamp(42px, 9vw, 58px); margin-bottom: 24px; }
+ .retrato, .retratoDerecho { height: clamp(230px, 34vh, 320px); min-height: 230px; grid-row: 2; }
+ .retratoDerecho { margin-top: 0; }
+ .firmaHero { font-size: 28px; margin-top: 24px; }
+}

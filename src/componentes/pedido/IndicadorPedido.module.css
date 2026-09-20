@@ -1,0 +1,3 @@
+.estado { position: absolute; top: 14px; right: 14px; z-index: 3; pointer-events: none; transform: rotate(7deg); }
+.bola { display: grid; place-items: center; min-width: 48px; height: 48px; padding: 0 12px; border-radius: 50%; background: var(--color-rojo-600); color: var(--color-crema); font: 800 23px/1 var(--font-archivo); pointer-events: auto; }
+@media (prefers-reduced-motion: no-preference) { .bola { animation: aparece 180ms ease-out; } @keyframes aparece { from { transform: scale(.85); } to { transform: scale(1); } } }
