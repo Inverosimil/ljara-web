@@ -10,6 +10,7 @@ export { ControlCantidad } from "./ControlCantidad";
 export { Chapa, ChapaDeFondo, FranjaChapas, rutaCorona } from "./Chapa";
 export { Etiqueta, EtiquetaPegada, SelloOferta } from "./Etiqueta";
 export { FichaProducto, type ProductoTarjeta } from "./FichaProducto";
+export { FichaAmpliada } from "./FichaAmpliada";
 export { ModalProducto, type ProductoDetalle } from "./ModalProducto";
 export { MapaCobertura } from "./MapaCobertura";
 export { MarcoFoto } from "./MarcoFoto";

@@ -1,0 +1,8 @@
+/* El marco de la ficha cuando es página y no modal. Repite el papel y el radio
+   del panel del modal para que compartir el enlace y abrir la tarjeta lleven a
+   lo mismo, solo que una versión está dentro de un diálogo y la otra no. */
+.marco { overflow: hidden; border-radius: 16px; background: var(--color-papel); box-shadow: 0 20px 70px #0000001a; }
+
+.volver { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-bottom: 14px; font-family: var(--font-archivo); font-style: normal; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--color-tinta); }
+.volver:hover { color: var(--color-rojo-600); }
+.volver:focus-visible { outline: 3px solid var(--color-rojo-500); outline-offset: 3px; border-radius: 6px; }

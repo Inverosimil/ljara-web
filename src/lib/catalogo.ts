@@ -256,6 +256,49 @@ export async function productosPorId(ids: string[]): Promise<ProductoSitio[]> {
   return ((data ?? []) as unknown as FilaProducto[]).map(aProducto);
 }
 
+/** Un producto por su id, o `null` si no existe o no está publicado.
+ *
+ *  Las políticas de `ljara_public` solo dejan ver lo publicado y activo, así que
+ *  un id real de un producto despublicado devuelve `null` igual que uno
+ *  inventado. Es lo correcto: la página del producto responde «no encontrado» en
+ *  vez de filtrar que existe pero está oculto. */
+export async function productoPorId(id: string): Promise<ProductoSitio | null> {
+  const [producto] = await productosPorId([id]);
+  return producto ?? null;
+}
+
+/** Los productos publicados, para el sitemap: solo id y nombre.
+ *
+ *  ⚠️ Pagina. Hoy hay 50 publicados de 955, pero el día que se publiquen todos
+ *  una consulta sin paginar toparía con el corte de 1.000 filas y el sitemap
+ *  quedaría incompleto sin que nadie se enterara. El orden por id no es
+ *  cosmético: sin `ORDER BY` la paginación repite filas y se salta otras. */
+export async function productosParaMapa(): Promise<
+  { id: string; nombre: string; actualizado: string | null }[]
+> {
+  const supabase = clienteSitio();
+  const salida: { id: string; nombre: string; actualizado: string | null }[] = [];
+  const TRAMO = 500;
+
+  for (let desde = 0; ; desde += TRAMO) {
+    const { data, error } = await supabase
+      .schema("ljara")
+      .from("producto")
+      .select("id, nombre, actualizado_en")
+      .eq("publicado", true)
+      .eq("estado", "activo")
+      .order("id")
+      .range(desde, desde + TRAMO - 1);
+
+    if (error) throw error;
+    const filas = (data ?? []) as { id: number; nombre: string; actualizado_en: string | null }[];
+    for (const f of filas) {
+      salida.push({ id: String(f.id), nombre: f.nombre, actualizado: f.actualizado_en });
+    }
+    if (filas.length < TRAMO) return salida;
+  }
+}
+
 /** Cuántos productos publicados hay en total, sin traer ninguno. */
 export async function contarPublicados(): Promise<number> {
   const supabase = clienteSitio();

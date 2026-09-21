@@ -9,6 +9,7 @@ import {
   Press_Start_2P,
   Staatliches,
 } from "next/font/google";
+import { EMPRESA } from "@/contenido/empresa";
 import "./globals.css";
 
 // Una pareja de fuentes por familia de propuestas. Se cargan todas aquí porque
@@ -76,20 +77,34 @@ const FUENTES = [
   .join(" ");
 
 export const metadata: Metadata = {
-  // TODO: cambiar por el dominio real al desplegar; sin esto las imágenes de
-  // Open Graph se sirven con URL relativa y no las levanta ninguna red social.
-  metadataBase: new URL("https://ljara.cl"),
+  /* El dominio real, confirmado el 2026-09-20. No es cosmético: sin una URL
+     absoluta las imágenes de Open Graph se sirven con ruta relativa y no las
+     levanta ninguna red social —WhatsApp incluido—. El sitio vive en la raíz;
+     `www.cdljara.cl` debe redirigir acá o los buscadores indexan dos sitios. */
+  metadataBase: new URL("https://cdljara.cl"),
+  /* La portada NO declara título propio: usa este `default`, y así el formato de
+     la pestaña es uno solo en todo el sitio. El resto de páginas pasa por la
+     plantilla —«Catálogo · L. Jara»—. */
   title: {
-    default: "L.Jara Distribuidora — Bebidas con y sin alcohol",
-    template: "%s · L.Jara",
+    default: "L. Jara — Bebidas con y sin alcohol",
+    template: "%s · L. Jara",
   },
   description:
     "Distribuidora y Comercializadora Luis Jara y Compañía — bebidas con y sin alcohol.",
+  /* El sitio es de la empresa; quien lo construye es otra persona. */
+  authors: [{ name: "Sebastián Carrasco" }],
+  creator: "Sebastián Carrasco",
+  publisher: EMPRESA.nombreLargo,
   openGraph: {
     type: "website",
     locale: "es_CL",
-    siteName: "L.Jara Distribuidora",
+    /* Al compartir, el nombre se escribe completo: fuera de la pestaña no hay
+       contexto que diga a qué se dedica. */
+    siteName: "Distribuidora L. Jara",
   },
+  /* Sin tarjeta de Twitter/X y sin cuentas de redes declaradas: la empresa
+     todavía no tiene ninguna (levantamiento del 2026-08-17). Cuando existan,
+     se agregan acá. */
 };
 
 export const viewport: Viewport = {

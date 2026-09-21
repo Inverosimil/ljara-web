@@ -19,7 +19,7 @@ export default function PaginaNosotros() {
       <section className={styles.portada} aria-labelledby="titulo-nosotros">
         <div className={styles.presentacion}>
           <h1 id="titulo-nosotros">Una camioneta.<br /><span className={styles.rojo}>Muchas historias.</span></h1>
-          <p>L.Jara nació del trabajo, la cercanía y las ganas de apoyar a los negocios de barrio. Lo que comenzó con una camioneta, hoy es una distribuidora de bebidas que sigue creyendo en las mismas cosas: las personas y sus barrios.</p>
+          <p>L. Jara nació del trabajo, la cercanía y las ganas de apoyar a los negocios de barrio. Lo que comenzó con una camioneta, hoy es una distribuidora de bebidas que sigue creyendo en las mismas cosas: las personas y sus barrios.</p>
         </div>
         <div className={styles.portadaVisual}>
           <div className={styles.fotoPortada}><Image src="/nosotros/portada.webp" alt="Imagen ilustrativa de una camioneta frente a una bodega de bebidas" fill priority sizes="(max-width: 767px) 100vw, 55vw" draggable={false} /></div>

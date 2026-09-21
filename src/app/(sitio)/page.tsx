@@ -10,8 +10,10 @@ import { COBERTURA_PUBLICA, EMPRESA } from "@/contenido/empresa";
 import styles from "@/componentes/sitio/Inicio.module.css";
 
 const manuscrita = Caveat({ subsets: ["latin"], weight: "500", display: "swap" });
+/* Sin `title`: hereda el `default` del layout raíz, que es exactamente el título
+   de la portada. Declararlo acá además obligaba a `absolute` para saltarse la
+   plantilla, y eso era lo que hacía que la portada se viera distinta al resto. */
 export const metadata: Metadata = {
-  title: { absolute: `${EMPRESA.nombre} — ${EMPRESA.bajada}` },
   description: EMPRESA.descripcionCorta,
 };
 

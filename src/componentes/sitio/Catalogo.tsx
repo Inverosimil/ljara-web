@@ -4,17 +4,16 @@ import { Lato } from "next/font/google";
 import { BotonEditorial } from "@/componentes/ui/BotonEditorial";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
-import { AgregarAlPedido } from "@/componentes/pedido/AgregarAlPedido";
 import { SembrarCatalogo } from "@/componentes/pedido/SembrarCatalogo";
 import {
   Boton,
   FichaProducto,
-  ModalProducto,
   Paginacion,
   Recorte,
   cx,
 } from "@/componentes/ui";
 import { enlaceWhatsApp } from "@/lib/pedido";
+import { rutaProducto } from "@/lib/producto-url";
 import { ORDENES } from "@/lib/catalogo-opciones";
 import {
   type CategoriaSitio,
@@ -73,7 +72,6 @@ export function Catalogo({
   const router = useRouter();
   const params = useSearchParams();
   const [pendiente, iniciar] = useTransition();
-  const [abierto, setAbierto] = useState<ProductoSitio | null>(null);
 
   const [texto, setTexto] = useState(busqueda);
 
@@ -214,7 +212,7 @@ export function Catalogo({
             >
               {productos.map((p, indice) => (
                 <li key={p.id}>
-                  <FichaProducto producto={p} prioridad={indice < 4} onAbrir={() => setAbierto(p)} />
+                  <FichaProducto producto={p} prioridad={indice < 4} href={rutaProducto(p)} />
                 </li>
               ))}
             </ul>
@@ -259,11 +257,6 @@ export function Catalogo({
         <div className={styles.pieCatalogo}>{pie}</div>
       </div>
 
-      <ModalProducto
-        producto={abierto}
-        onCerrar={() => setAbierto(null)}
-        acciones={abierto ? <AgregarAlPedido key={abierto.id} producto={abierto} /> : null}
-      />
     </section>
   );
 }

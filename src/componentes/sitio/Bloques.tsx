@@ -132,7 +132,7 @@ export function PieDePagina() {
   return (
     <footer className={styles.footer}>
       <div className={styles.contenido}>
-        <Link href="/" className={styles.marca} aria-label="L.Jara — Inicio"><Chapa tamano="lg" /><span>Distribuidora de bebidas<br />con y sin alcohol.<br />Sector poniente de Santiago.</span></Link>
+        <Link href="/" className={styles.marca} aria-label="L. Jara — Inicio"><Chapa tamano="lg" /><span>Distribuidora de bebidas<br />con y sin alcohol.<br />Sector poniente de Santiago.</span></Link>
         <nav aria-label="Pie de página"><ul className={styles.enlaces}>{enlaces.map((e) => <li key={e.href}><Link href={e.href}>{e.texto}</Link></li>)}</ul></nav>
         <div className={styles.contacto}>
           {textoConfirmado(EMPRESA.contacto.telefono) && <a href={`tel:${EMPRESA.contacto.telefono.replace(/[^+0-9]/g, "")}`}><Phone aria-hidden size={15} />{EMPRESA.contacto.telefono}</a>}

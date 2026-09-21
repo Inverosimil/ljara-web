@@ -14,3 +14,8 @@
 
 .ficha > [role="status"] { top: -7px; right: -7px; }
 .ficha > [role="status"] > span { min-width: 54px; height: 54px; font-size: 27px; }
+
+/* La flecha cuando la tarjeta es un enlace: se ve igual, pero no recibe clics.
+   `.accion` va en z-index 3 y el enlace que cubre la tarjeta en 2, así que sin
+   esto la esquina de la flecha sería la única zona muerta de la tarjeta. */
+.decorativa { pointer-events: none; }

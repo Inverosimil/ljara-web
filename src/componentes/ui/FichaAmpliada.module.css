@@ -1,0 +1,20 @@
+/* El contenido de la ficha ampliada: galería a un lado, datos al otro.
+   Lo comparten el modal del catálogo y la página propia del producto, así que
+   no hay nada aquí del contenedor —ni panel, ni botón de cerrar—. */
+.columnas { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+.galeria { background: white; display: flex; flex-direction: column; justify-content: center; }
+.foto { position: relative; display: flex; align-items: center; justify-content: center; height: 480px; }
+.miniaturas { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; padding: 0 24px 32px; }
+.miniatura { position: relative; display: block; width: 76px; height: 84px; border-radius: 9px; overflow: hidden; cursor: pointer; background: white; }
+.datos { display: flex; flex-direction: column; min-width: 0; padding: 58px 36px 36px; }
+.titulo { font-size: clamp(26px,3vw,40px); line-height: 1.1; font-weight: 850; letter-spacing: -.04em; margin-top: 14px; padding-right: 12px; }
+.detalles { display: grid; grid-template-columns: auto 1fr; gap: 12px 20px; border-top: 1px solid #dedbd5; margin-top: 26px; padding-top: 24px; font-size: 15px; }
+.detalles dd { font-weight: 650; }
+.acciones { margin-top: auto; padding-top: 44px; }
+.acciones > p { font-size: 13px; line-height: 1.5; }
+@media(max-width:767px) { .columnas { grid-template-columns: 1fr; } .foto { height: 260px; } .miniaturas { padding-bottom: 16px; } .miniatura { width: 52px; height: 58px; } .datos { padding: 24px; } .acciones { padding-top: 26px; } }
+.foto > [role="status"] { left: 16px; right: auto; }
+
+.tituloConIndicador { position: relative; }
+.tituloConIndicador > [role="status"] { top: 14px; right: -24px; }
+@media(max-width:767px) { .tituloConIndicador > [role="status"] { right: -16px; top: 8px; } }

@@ -10,10 +10,13 @@
 // Fuente de los datos confirmados: `docs/negocio/perfil-empresa.md`.
 
 export const EMPRESA = {
-  /* ✅ Decidido el 2026-09-06 (cuestionario, pregunta 11): **«L.Jara» manda**, en el logo y
+  /* ✅ Decidido el 2026-09-06 (cuestionario, pregunta 11): **«L. Jara» manda**, en el logo y
      también en los textos. En el día a día la empresa es «Distribuidora Luis Jara», así que
-     el nombre corto es una decisión de marca, no un descuido. */
-  nombre: "L.Jara",
+     el nombre corto es una decisión de marca, no un descuido.
+     ⚠️ Revisado el 2026-09-20: va CON espacio tras el punto. El lettering de la chapa lo
+     dibuja pegado y no se puede editar —es el logo—, así que el texto y el logo difieren a
+     propósito. Este es el único lugar donde se escribe el nombre: no repetirlo a mano. */
+  nombre: "L. Jara",
   /* ⚠️ RAZÓN SOCIAL, no nombre de marca. Orden por confirmar: la empresa recordó
      «Comercializadora y Distribuidora Luis Jara y Compañía SpA», que invierte las dos
      primeras palabras respecto a esto. Hay que copiarlo de una factura antes de publicar.

@@ -84,7 +84,7 @@ export function Encabezado() {
             onPointerLeave={(e) => { if (e.currentTarget !== document.activeElement) animarMarca(false); }}
             onFocus={() => animarMarca(true)}
             onBlur={() => animarMarca(false)}
-            className={cx(styles.marca, styles.marcaRecortada)} aria-label="L.Jara — Inicio">
+            className={cx(styles.marca, styles.marcaRecortada)} aria-label="L. Jara — Inicio">
             <Chapa tamano="xl" className={styles.logo} />
           </Link>
 
