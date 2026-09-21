@@ -4,16 +4,18 @@ import { Lato } from "next/font/google";
 import { BotonEditorial } from "@/componentes/ui/BotonEditorial";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
+import { AgregarAlPedido } from "@/componentes/pedido/AgregarAlPedido";
 import { SembrarCatalogo } from "@/componentes/pedido/SembrarCatalogo";
 import {
   Boton,
   FichaProducto,
+  ModalProducto,
   Paginacion,
   Recorte,
   cx,
 } from "@/componentes/ui";
 import { enlaceWhatsApp } from "@/lib/pedido";
-import { rutaProducto } from "@/lib/producto-url";
+import { idDeProducto, PARAM_PRODUCTO, rutaProducto, rutaSinProducto } from "@/lib/producto-url";
 import { ORDENES } from "@/lib/catalogo-opciones";
 import {
   type CategoriaSitio,
@@ -48,6 +50,7 @@ export function Catalogo({
   categoria,
   orden,
   busqueda,
+  productoPedido,
   pie,
 }: {
   productos: ProductoSitio[];
@@ -58,6 +61,9 @@ export function Catalogo({
   categoria: string;
   orden: Orden;
   busqueda: string;
+  /** El producto que pide `?producto=` en la URL, ya resuelto por el servidor.
+   *  Llega null cuando no hay ninguno o cuando el id no existe. */
+  productoPedido: ProductoSitio | null;
   pie?: ReactNode;
 }) {
   const resultados = useRef<HTMLDivElement>(null);
@@ -139,6 +145,44 @@ export function Catalogo({
     ...categorias.map((c) => ({ id: c.id, etiqueta: c.etiqueta })),
   ];
 
+  /* ⚠️ Qué ficha está abierta lo dice la URL, no un estado: es la misma regla
+   * que los filtros. A cambio, un producto se puede compartir por WhatsApp, el
+   * botón de volver del navegador cierra la ficha y recargar no la pierde.
+   *
+   * El producto sale de la grilla que ya está pintada —abrir es instantáneo, sin
+   * esperar al servidor— y solo se usa el que trae el servidor cuando no está
+   * ahí: al llegar por un enlace compartido a un producto que cae en otra página
+   * del listado, o con otro filtro. */
+  const idPedido = idDeProducto(params.get(PARAM_PRODUCTO));
+
+  /* El id que está saliendo. La animación de salida necesita que el producto
+   * siga montado un momento después de pedir el cierre, y la URL todavía no ha
+   * cambiado: quien navega es `alCerrarse`, cuando GSAP terminó. */
+  const [cerrando, setCerrando] = useState<string | null>(null);
+
+  const productoAbierto =
+    idPedido && cerrando !== idPedido
+      ? (productos.find((p) => p.id === idPedido) ?? productoPedido)
+      : null;
+
+  /* Cerrar vuelve atrás si fuimos nosotros los que abrimos —así el historial no
+   * se llena de fichas— y reescribe la dirección si se llegó de fuera, donde
+   * volver atrás sacaría del sitio. */
+  const abiertoDesdeLaGrilla = useRef(false);
+  useEffect(() => {
+    if (!idPedido) abiertoDesdeLaGrilla.current = false;
+  }, [idPedido]);
+
+  function alCerrarse() {
+    if (abiertoDesdeLaGrilla.current) {
+      abiertoDesdeLaGrilla.current = false;
+      router.back();
+    } else {
+      router.replace(rutaSinProducto(params), { scroll: false });
+    }
+    setCerrando(null);
+  }
+
   const whatsapp = enlaceWhatsApp("Hola, estoy buscando un producto y quisiera consultarles.");
   const filtrando = categoria !== "todos" || busqueda !== "";
 
@@ -212,7 +256,12 @@ export function Catalogo({
             >
               {productos.map((p, indice) => (
                 <li key={p.id}>
-                  <FichaProducto producto={p} prioridad={indice < 4} href={rutaProducto(p)} />
+                  <FichaProducto
+                    producto={p}
+                    prioridad={indice < 4}
+                    href={rutaProducto(p.id, params)}
+                    onNavegar={() => { abiertoDesdeLaGrilla.current = true; }}
+                  />
                 </li>
               ))}
             </ul>
@@ -257,6 +306,14 @@ export function Catalogo({
         <div className={styles.pieCatalogo}>{pie}</div>
       </div>
 
+      <ModalProducto
+        producto={productoAbierto}
+        onCerrar={() => setCerrando(idPedido)}
+        onCerrado={alCerrarse}
+        acciones={
+          productoAbierto ? <AgregarAlPedido key={productoAbierto.id} producto={productoAbierto} /> : null
+        }
+      />
     </section>
   );
 }

@@ -4,42 +4,38 @@
  * una conexión a la base— y la tarjeta del catálogo, que es un componente de
  * cliente, necesita saber armar el enlace.
  *
- * ⚠️ El slug lleva el id delante y **solo el id se lee**: `1234-coca-cola-15-l`
- * y `1234-lo-que-sea` llevan al mismo producto. El nombre está ahí para que la
- * dirección se entienda al pegarla en un WhatsApp y para que un buscador vea de
- * qué trata la página; no es la identidad. Si mañana alguien corrige el nombre
- * de un producto en la plataforma interna, los enlaces compartidos siguen
- * funcionando en vez de romperse en silencio.
+ * ⚠️ Un producto NO es una página aparte: es el catálogo con un parámetro. Se
+ * probó con ruta propia y ruta interceptada, y se volvió atrás: el modal tiene
+ * que abrirse sobre el catálogo, no navegar a otro sitio.
  *
- * ⚠️ No se usa `codigo_autoventa`: el export trae 26 códigos repetidos, así que
- * no identifica una fila. El id interno sí.
+ * ⚠️ Y es un parámetro de consulta, no un `#`. El navegador no envía el `#` al
+ * servidor, así que con un ancla no habría forma de responder con el nombre y
+ * la foto del producto al compartir el enlace: WhatsApp mostraría la imagen
+ * genérica del catálogo.
+ *
+ * ⚠️ El identificador es el id interno, no `codigo_autoventa`: el export trae 26
+ * códigos repetidos, así que ese no identifica una fila.
  */
 
-/** Pasa un texto a la forma que admite una URL: sin tildes, sin ñ y sin signos. */
-function enGuiones(texto: string): string {
-  return texto
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
+export const PARAM_PRODUCTO = "producto";
+
+/** El catálogo con un producto abierto, conservando los filtros que haya. */
+export function rutaProducto(id: string, actuales?: URLSearchParams | null): string {
+  const params = new URLSearchParams(actuales?.toString() ?? "");
+  params.set(PARAM_PRODUCTO, id);
+  return `/catalogo?${params.toString()}`;
 }
 
-export function slugProducto(producto: { id: string; nombre: string }): string {
-  const nombre = enGuiones(producto.nombre);
-  return nombre ? `${producto.id}-${nombre}` : producto.id;
+/** El catálogo sin producto abierto, conservando el resto. */
+export function rutaSinProducto(actuales?: URLSearchParams | null): string {
+  const params = new URLSearchParams(actuales?.toString() ?? "");
+  params.delete(PARAM_PRODUCTO);
+  const cadena = params.toString();
+  return cadena ? `/catalogo?${cadena}` : "/catalogo";
 }
 
-export function rutaProducto(producto: { id: string; nombre: string }): string {
-  return `/catalogo/${slugProducto(producto)}`;
-}
-
-/** El id que lleva un slug, o `null` si no empieza por uno.
- *
- *  Devolver `null` en vez de lanzar es deliberado: una dirección escrita a mano
- *  termina en la página de «no encontrado», que es la respuesta correcta. */
-export function idDesdeSlug(slug: string): string | null {
-  const encontrado = /^(\d+)(?:-|$)/.exec(slug);
-  return encontrado ? encontrado[1] : null;
+/** El id que pide la URL, o `null`. Solo dígitos: cualquier otra cosa es una
+ *  dirección escrita a mano y el catálogo se abre sin ficha. */
+export function idDeProducto(valor: string | null | undefined): string | null {
+  return valor && /^\d+$/.test(valor) ? valor : null;
 }

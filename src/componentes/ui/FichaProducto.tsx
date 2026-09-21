@@ -18,10 +18,12 @@ export type ProductoTarjeta = ProductoMuestra & { imagenes?: FotoProducto[]; cat
  * tarjeta se puede abrir, no un segundo control —dos destinos idénticos obligan
  * a apuntar y le repiten el mismo enlace a quien usa lector de pantalla—.
  *
- * `href` navega y `onAbrir` solo avisa. El catálogo usa `href`, porque cada
- * producto tiene su dirección y así se puede compartir; `/design-system` usa
- * `onAbrir`, porque ahí las tarjetas son muestras y no llevan a ninguna parte. */
-export function FichaProducto({ producto, href, onAbrir, prioridad = false }: { producto: ProductoTarjeta; href?: string; onAbrir?: () => void; prioridad?: boolean }) {
+ * `href` es un enlace de verdad —se puede copiar, abrir en otra pestaña y el
+ * lector de pantalla lo anuncia como enlace— y apunta al catálogo con el
+ * producto puesto en la dirección; no navega a otra página. `/design-system`
+ * usa `onAbrir` en su lugar, porque ahí las tarjetas son muestras y no llevan a
+ * ninguna parte. */
+export function FichaProducto({ producto, href, onNavegar, onAbrir, prioridad = false }: { producto: ProductoTarjeta; href?: string; onNavegar?: () => void; onAbrir?: () => void; prioridad?: boolean }) {
   const foto = producto.imagenes?.[0];
   const etiqueta = `Ver producto: ${producto.nombre}`;
   const accionable = Boolean(href || onAbrir);
@@ -29,7 +31,10 @@ export function FichaProducto({ producto, href, onAbrir, prioridad = false }: { 
     <article className={styles.ficha}>
       <IndicadorPedido id={producto.id} />
       {href
-        ? <Link className={styles.abrir} href={href} aria-label={etiqueta} />
+        /* ⚠️ `scroll={false}`: abrir una ficha no debe mover el catálogo. Sin
+           esto Next salta arriba al navegar y, al cerrar, la grilla ya no
+           está donde se dejó. */
+        ? <Link className={styles.abrir} href={href} scroll={false} onClick={onNavegar} aria-label={etiqueta} />
         : onAbrir && <button className={styles.abrir} type="button" onClick={onAbrir} aria-label={etiqueta} />}
       <div className={styles.foto}>
         {foto ? <Image src={foto.url} alt={foto.alt} fill loading={prioridad ? "eager" : "lazy"} sizes="(min-width: 1000px) 28vw, (min-width: 768px) 35vw, 50vw" draggable={false} /> : <EnvaseSilueta categoria={producto.categoria} envase={producto.envase} className="h-28 w-auto" />}

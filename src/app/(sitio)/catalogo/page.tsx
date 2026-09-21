@@ -9,12 +9,63 @@ import {
   esOrden,
   listarCategorias,
   listarProductos,
+  productoPorId,
 } from "@/lib/catalogo";
+import { categoriaEtiqueta, contenido } from "@/lib/formato";
+import { idDeProducto, rutaProducto } from "@/lib/producto-url";
 
-export const metadata: Metadata = {
-  title: "Catálogo",
-  description: `Catálogo de bebidas con y sin alcohol de ${EMPRESA.nombre}.`,
-};
+/* La metadata depende de si hay una ficha abierta.
+ *
+ * ⚠️ Esta es la razón por la que el producto va en un parámetro y no en un `#`:
+ * el navegador no envía el `#` al servidor, así que con un ancla esta función
+ * no tendría forma de saber qué producto responder y compartir un producto
+ * mostraría siempre la imagen del catálogo. */
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Parametros;
+}): Promise<Metadata> {
+  const { producto: pedido } = await searchParams;
+  const id = idDeProducto(pedido);
+  const producto = id ? await productoPorId(id) : null;
+
+  if (!producto) {
+    return {
+      title: "Catálogo",
+      description: `Catálogo de bebidas con y sin alcohol de ${EMPRESA.nombre}.`,
+    };
+  }
+
+  const detalle = [
+    producto.categoriaNombre || categoriaEtiqueta(producto.categoria),
+    producto.contenidoMl != null ? contenido(producto.contenidoMl) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const descripcion =
+    producto.descripcion ||
+    `${producto.nombre}${detalle ? ` — ${detalle}` : ""}. Consulta precio y disponibilidad con ${EMPRESA.nombre}.`;
+
+  return {
+    title: producto.nombre,
+    description: descripcion,
+    /* La canónica lleva SOLO el producto: `?producto=239&categoria=vino&p=2` y
+       `?producto=239` muestran la misma ficha, y sin esto un buscador vería una
+       dirección distinta por cada combinación de filtros desde la que alguien
+       compartió el enlace. */
+    alternates: { canonical: rutaProducto(producto.id) },
+    openGraph: {
+      type: "website",
+      title: producto.nombre,
+      description: descripcion,
+      url: rutaProducto(producto.id),
+      /* La imagen la compone una ruta aparte: `opengraph-image` solo recibe los
+         segmentos de la dirección, nunca los parámetros, así que no puede saber
+         qué producto dibujar. */
+      images: [{ url: `/og/producto/${producto.id}`, width: 1200, height: 630, alt: producto.nombre }],
+    },
+  };
+}
 
 /* ⚠️ Esta página ya no tiene portada.
  *
@@ -41,6 +92,7 @@ type Parametros = Promise<{
   orden?: string;
   q?: string;
   p?: string;
+  producto?: string;
 }>;
 
 export default async function PaginaCatalogo({
@@ -48,7 +100,7 @@ export default async function PaginaCatalogo({
 }: {
   searchParams: Parametros;
 }) {
-  const { categoria, orden, q, p } = await searchParams;
+  const { categoria, orden, q, p, producto: pedido } = await searchParams;
 
   const paginaPedida = Number(p);
   const consulta = {
@@ -58,9 +110,16 @@ export default async function PaginaCatalogo({
     pagina: Number.isInteger(paginaPedida) && paginaPedida > 0 ? paginaPedida : 1,
   };
 
-  const [resultado, categorias] = await Promise.all([
+  /* El producto de la URL se resuelve acá y no en el cliente: si alguien llega
+     por un enlace compartido, la ficha tiene que estar abierta en la primera
+     pintada, aunque ese producto no caiga en la página del listado que se está
+     mostrando. */
+  const idPedido = idDeProducto(pedido);
+
+  const [resultado, categorias, productoPedido] = await Promise.all([
     listarProductos(consulta),
     listarCategorias(),
+    idPedido ? productoPorId(idPedido) : Promise.resolve(null),
   ]);
 
   return (
@@ -78,6 +137,7 @@ export default async function PaginaCatalogo({
           categoria={consulta.categoria ?? "todos"}
           orden={consulta.orden}
           busqueda={consulta.busqueda}
+          productoPedido={productoPedido}
           pie={<PieDePagina />}
         />
       </Suspense>
