@@ -1,7 +1,7 @@
 import "server-only";
 import { Pool, types } from "pg";
-import { conexionLjara } from "../../../compartido/conexion-ljara";
-import { clienteLjara } from "../../../compartido/consulta-ljara";
+import { conexionLjara } from "@/compartido/conexion-ljara";
+import { clienteLjara } from "@/compartido/consulta-ljara";
 types.setTypeParser(20, v => { const n=Number(v); if (!Number.isSafeInteger(n)) throw new Error("Identificador fuera de rango"); return n; });
 types.setTypeParser(1700, Number);
 let pool: Pool | undefined;

@@ -4,7 +4,9 @@ import type { NextConfig } from "next";
 
 // Turbopack detecta la raiz buscando un lockfile hacia arriba y encuentra uno
 // suelto en el home del usuario, lo que dejaria la raiz en /Users/<usuario>.
-// La raíz del repositorio incluye compartido/; cada app mantiene su propio build.
+// ⚠️ La raíz es ESTA carpeta, no la del monorepo: el sitio se despliega desde el
+// repositorio ljara-web, donde web/ es la raíz y no existe un nivel superior.
+// Apuntar hacia arriba dejaría el trazado de archivos fuera del repositorio.
 const raiz = path.dirname(fileURLToPath(import.meta.url));
 
 /* Las fotos de producto viven en Supabase Storage, o sea en otro dominio.
@@ -14,8 +16,8 @@ const raiz = path.dirname(fileURLToPath(import.meta.url));
 const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 const nextConfig: NextConfig = {
-  turbopack: { root: path.resolve(raiz, "..") },
-  outputFileTracingRoot: path.resolve(raiz, ".."),
+  turbopack: { root: raiz },
+  outputFileTracingRoot: raiz,
   images: supabase
     ? {
         remotePatterns: [
