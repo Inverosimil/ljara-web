@@ -54,7 +54,6 @@ export async function generateMetadata({ params }: Ruta): Promise<Metadata> {
      metadata inventada la haría parecer válida al compartirla. */
   if (!producto) return { title: "Producto no encontrado" };
 
-  const foto = producto.imagenes?.[0];
   const descripcion = resumen(producto);
 
   return {
@@ -69,11 +68,9 @@ export async function generateMetadata({ params }: Ruta): Promise<Metadata> {
       title: producto.nombre,
       description: descripcion,
       url: `/catalogo/${slugProducto(producto)}`,
-      /* ⚠️ La foto del producto, si la tiene. De 955 productos hay 354 con
-         imagen apta, así que lo normal es que muchos NO la tengan: sin `images`
-         aquí, hereda la del sitio, que es la chapa. Es el comportamiento
-         correcto —una imagen genérica es mejor que ninguna—, no un pendiente. */
-      images: foto ? [{ url: foto.url, alt: foto.alt || producto.nombre }] : undefined,
+      /* ⚠️ Sin `images`: la pone `opengraph-image.tsx`, que compone la foto del
+         producto con su nombre. Declararla acá GANARÍA sobre ese archivo y se
+         compartiría la foto pelada. */
     },
   };
 }

@@ -28,7 +28,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITIO}/pedido`, lastModified: ahora, changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  const productos = await productosParaMapa();
+  /* ⚠️ Si la base no contesta, el sitemap sale con las cinco páginas y ya.
+   *
+   * Sin esto un hipo de conexión tumba el BUILD ENTERO: el sitemap se
+   * prerenderiza, y una excepción acá aborta el despliegue completo. Pasó
+   * durante el desarrollo, con un «Connection terminated due to connection
+   * timeout». Un sitemap sin productos es un problema menor y se corrige en la
+   * siguiente regeneración; un despliegue caído deja el sitio sin actualizar. */
+  let productos: Awaited<ReturnType<typeof productosParaMapa>> = [];
+  try {
+    productos = await productosParaMapa();
+  } catch (error) {
+    console.error("[sitemap] no se pudieron leer los productos:", error);
+  }
+
   for (const p of productos) {
     paginas.push({
       url: `${SITIO}/catalogo/${slugProducto(p)}`,
