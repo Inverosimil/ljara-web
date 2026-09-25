@@ -49,7 +49,7 @@ export async function GET(_peticion: Request, { params }: { params: Promise<{ id
         }}
       >
         {/* La foto, sobre blanco como en la ficha del sitio. Si el producto no
-            tiene —de 955 hay 354 con imagen apta— este bloque no se dibuja y el
+            tiene —231 de 922 no la tienen— este bloque no se dibuja y el
             nombre ocupa el ancho completo. */}
         {foto && (
           <div
