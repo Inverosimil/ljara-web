@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/** Adaptador privado, limitado al catálogo de L.Jara. No acepta SQL del navegador.
+/** Adaptador privado, limitado al esquema de L.Jara (catálogo y finanzas). No acepta SQL del navegador.
  * Los valores siempre viajan como parámetros; tablas y relaciones tienen lista cerrada. */
 export type Ejecutar = (sql: string, valores: unknown[]) => Promise<{ rows: any[]; rowCount: number | null }>;
-const TABLAS = new Set(["producto", "marca", "categoria", "formato", "codigo_barra", "imagen", "sello", "perfil", "cambio", "costo", "precio", "tasa_ila", "ubicacion", "movimiento", "existencia", "conteo", "conteo_linea", "importacion", "rechazo", "conteo_categoria"]);
+const TABLAS = new Set(["producto", "marca", "categoria", "formato", "codigo_barra", "imagen", "sello", "perfil", "cambio", "costo", "precio", "tasa_ila", "ubicacion", "movimiento", "existencia", "conteo", "conteo_linea", "importacion", "rechazo", "conteo_categoria",
+  "contraparte", "cuenta_dinero", "documento", "movimiento_dinero", "aplicacion",
+  "documento_estado", "movimiento_estado", "saldo_cuenta", "cuenta_corriente", "flujo_mensual", "calendario_vencimiento"]);
 const ESQUEMAS = new Set(["ljara"]);
 const ident = (s: string) => { if (!/^[a-z_][a-z0-9_]*$/.test(s)) throw new Error("Identificador no permitido"); return `"${s}"`; };
 type Relacion = { tabla: string; local: string; remota: string; lista: boolean };
@@ -15,6 +17,29 @@ const RELACIONES: Record<string, Record<string, Relacion>> = {
   },
   formato: { codigo_barra: { tabla: "codigo_barra", local: "id", remota: "formato_id", lista: true },
     producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false } },
+  // Finanzas (0028). Las vistas *_estado llevan las mismas relaciones que su tabla.
+  documento: {
+    contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false },
+    aplicacion: { tabla: "aplicacion", local: "id", remota: "documento_id", lista: true },
+  },
+  documento_estado: {
+    contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false },
+    aplicacion: { tabla: "aplicacion", local: "id", remota: "documento_id", lista: true },
+  },
+  movimiento_dinero: {
+    cuenta: { tabla: "cuenta_dinero", local: "cuenta_id", remota: "id", lista: false },
+    contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false },
+    aplicacion: { tabla: "aplicacion", local: "id", remota: "movimiento_id", lista: true },
+  },
+  movimiento_estado: {
+    cuenta: { tabla: "cuenta_dinero", local: "cuenta_id", remota: "id", lista: false },
+    contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false },
+    aplicacion: { tabla: "aplicacion", local: "id", remota: "movimiento_id", lista: true },
+  },
+  aplicacion: {
+    documento: { tabla: "documento", local: "documento_id", remota: "id", lista: false },
+    movimiento: { tabla: "movimiento_dinero", local: "movimiento_id", remota: "id", lista: false },
+  },
 };
 function partes(s: string): string[] {
   let nivel = 0, inicio = 0; const salida: string[] = [];
@@ -57,6 +82,11 @@ export class ConsultaLjara<U extends boolean = false> implements PromiseLike<Res
   eq(c: string, v: unknown) { this.filtros.push(`${this.columna(c)} = ${this.valor(v)}`); return this; }
   is(c: string, v: null | boolean) { this.filtros.push(`${this.columna(c)} IS ${v === null ? "NULL" : v ? "TRUE" : "FALSE"}`); return this; }
   in(c: string, v: unknown[]) { this.filtros.push(v.length ? `${this.columna(c)} IN (${v.map(x => this.valor(x)).join(",")})` : "FALSE"); return this; }
+  neq(c: string, v: unknown) { this.filtros.push(`${this.columna(c)} <> ${this.valor(v)}`); return this; }
+  gt(c: string, v: unknown) { this.filtros.push(`${this.columna(c)} > ${this.valor(v)}`); return this; }
+  gte(c: string, v: unknown) { this.filtros.push(`${this.columna(c)} >= ${this.valor(v)}`); return this; }
+  lt(c: string, v: unknown) { this.filtros.push(`${this.columna(c)} < ${this.valor(v)}`); return this; }
+  lte(c: string, v: unknown) { this.filtros.push(`${this.columna(c)} <= ${this.valor(v)}`); return this; }
   ilike(c: string, v: string) { this.filtros.push(`${this.columna(c)} ILIKE ${this.valor(v)}`); return this; }
   buscar(columnas: string[], texto: string) { const v = this.valor(`%${texto.replace(/[\\%_]/g, "\\$&")}%`); this.filtros.push(`(${columnas.map(c => `${this.columna(c)} ILIKE ${v}`).join(" OR ")})`); return this; }
   order(c: string, o?: { ascending?: boolean; nullsFirst?: boolean; referencedTable?: string }) { this.ordenes.push(`${this.columna(o?.referencedTable ? `${o.referencedTable}.${c}` : c)} ${o?.ascending === false ? "DESC" : "ASC"} NULLS ${o?.nullsFirst ? "FIRST" : "LAST"}`); return this; }
@@ -110,6 +140,11 @@ export function clienteLjara(ejecutar: Ejecutar) {
       if (nombre !== "definir_imagen_principal") throw new Error("Función no permitida");
       try { await ejecutar("SELECT ljara.definir_imagen_principal($1)", [parametros.p_imagen_id]); return { error: null }; }
       catch (e) { return { error: { message: (e as Error).message } }; }
+    },
+    /** Registra un movimiento de dinero con sus aplicaciones en una sola transacción (0028). */
+    async registrarMovimiento(p: Record<string, unknown>): Promise<{ data: number | null; error: { message: string } | null }> {
+      try { const r = await ejecutar("SELECT ljara.registrar_movimiento($1::jsonb) AS id", [JSON.stringify(p)]); return { data: Number(r.rows[0].id), error: null }; }
+      catch (e) { return { data: null, error: { message: (e as Error).message } }; }
     },
   }; return cliente;
 }
