@@ -64,3 +64,11 @@
 .pagina h1 .rojo { white-space: nowrap; }
 .foto { aspect-ratio: .98; }
 @media (max-width: 767px) { .pagina h1 { font-size: clamp(29px, 7.6vw, 50px); } .foto { aspect-ratio: 1.2; } }
+
+/* Teléfono: la nota del cierre tapaba más de la mitad de la foto. Se achica y
+   se corre hacia la esquina, que es donde una nota pegada se lee como gesto. */
+@media (max-width: 767px) {
+  .cierreVisual .nota { left: auto; right: -8px; bottom: -18px; font-size: 18px; padding: 10px 12px; }
+  .cierreVisual .nota::before { width: 40px; height: 14px; left: 12px; top: -6px; }
+  .cierre { padding-bottom: 56px; }
+}

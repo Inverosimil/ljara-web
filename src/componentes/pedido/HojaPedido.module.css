@@ -89,3 +89,26 @@
 .cantidad button:hover:not(:disabled) { background: #e6dfd3; }
 .cantidad input { flex: 1; width: 40px; height: 36px; border: 0; border-radius: 0; background: transparent; font-family: var(--font-inter); font-weight: 700; }
 .cantidad input:focus-visible { outline: 2px solid #c51e14; border-radius: 5px; }
+
+/* Tamaños mínimos legibles (2026-10-30): había textos de 11 y 12 px, justo en
+   las instrucciones que dicen qué pasa al enviar. Y el campo a 16 px evita que
+   el iPhone haga zoom al tocarlo. */
+.volver { font-size: 15px; }
+.tituloLista > span { font-size: 15px; }
+.formato { font-size: 12px; }
+.detalle p { font-size: 14px; }
+.pieControl { font-size: 13px; }
+.vaciar { font-size: 15px; }
+.confirmacion { font-size: 14px; }
+.datos > p { font-size: 15px; }
+.datos label { font-size: 14px; }
+.datos input { font-size: 16px; }
+.datos small { font-size: 13px; }
+.unidades { font-size: 14px; }
+.aviso { font-size: 15px; }
+.estado { font-size: 14px; }
+.mensaje summary { font-size: 14px; }
+.mensaje textarea { font-size: 14px; }
+.sinMinimo { font-size: 14px; }
+.vacio p { font-size: 16px; }
+@media (max-width: 720px) { .presentacion > p { font-size: 16px; } }

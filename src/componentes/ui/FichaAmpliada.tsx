@@ -109,7 +109,7 @@ export function FichaAmpliada({
           altura del pie de la foto— y no salta según cuánto texto traiga cada
           producto. */}
       <div className={styles.datos}>
-        <p className="text-[11px] tracking-[0.18em] text-neutro-600 uppercase">
+        <p className="text-xs tracking-[0.18em] text-neutro-600 uppercase">
           {producto.categoriaNombre || categoriaEtiqueta(producto.categoria)}
         </p>
         <div className={styles.tituloConIndicador}>

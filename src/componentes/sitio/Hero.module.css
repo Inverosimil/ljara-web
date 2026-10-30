@@ -147,3 +147,11 @@
   from { transform: perspective(160px) rotateY(0deg); }
   to { transform: perspective(160px) rotateY(360deg); }
 }
+
+/* En el teléfono las dos acciones no caben lado a lado: la secundaria se
+   partía en dos líneas con el ícono suelto a la derecha. Se apilan. */
+@media (max-width: 639px) {
+  .acciones { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .acciones > span > a { font-size: 15px; }
+  .acciones > a { justify-self: start; font-size: 18px; }
+}

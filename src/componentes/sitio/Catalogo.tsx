@@ -220,7 +220,7 @@ export function Catalogo({
             })}
           </div>
         </div>
-        <div className={styles.ayuda}>
+        <div className={cx(styles.ayuda, styles.ayudaLateral)}>
           <h3><span>¿Buscas</span><span>algo más?</span></h3>
           <div className={`${styles.contactoAyuda} ${lectura.className}`}>
             <BotonEditorial href={whatsapp ?? "/contacto"} icono="conversacion">Háblanos</BotonEditorial>
@@ -231,7 +231,7 @@ export function Catalogo({
               pagina={pagina}
               paginas={paginas}
               onIr={(n) => irA({ p: n === 1 ? null : String(n) }, { arriba: true })}
-              className={styles.paginacion}
+              className={cx(styles.paginacion, styles.paginacionLateral)}
             />
       </aside>
       <div ref={resultados} data-scroll-principal className={styles.resultados} aria-busy={pendiente} tabIndex={0} aria-label="Productos del catálogo">
@@ -303,6 +303,15 @@ export function Catalogo({
               onIr={(n) => irA({ p: n === 1 ? null : String(n) }, { arriba: true })}
               className={styles.paginacionFinal}
             />
+        {/* En el teléfono el panel de filtros va ARRIBA de la grilla: con este
+            bloque ahí, el primer producto quedaba fuera de la primera pantalla.
+            Se repite aquí, al final, y el del panel se oculta. */}
+        <div className={cx(styles.ayuda, styles.ayudaMovil)}>
+          <p className={styles.ayudaTitulo}><span>¿Buscas</span><span>algo más?</span></p>
+          <div className={`${styles.contactoAyuda} ${lectura.className}`}>
+            <BotonEditorial href={whatsapp ?? "/contacto"} icono="conversacion">Háblanos</BotonEditorial>
+          </div>
+        </div>
         <div className={styles.pieCatalogo}>{pie}</div>
       </div>
 

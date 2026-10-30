@@ -82,3 +82,16 @@
 .contactoAyuda { display: flex; justify-content: center; padding-left: 0; }
 .ayuda h3 { display: table; margin-inline: auto; text-align: left; }
 .ayuda h3 span { margin-inline: 0; }
+
+/* Teléfono: el panel queda arriba de la grilla, así que solo lleva lo que se
+   usa antes de mirar productos —buscar, ordenar, categorías—. La ayuda y la
+   paginación van al final de la grilla. */
+.ayudaMovil { display: none; }
+.ayudaTitulo { margin: 0; font-family: var(--font-archivo); font-size: 30px; font-weight: 850; letter-spacing: -.035em; line-height: 1.13; display: table; margin-inline: auto; text-align: left; }
+.ayudaTitulo span { display: table; padding: 2px 6px 4px; color: var(--color-crema); background: var(--color-tinta); border-radius: 4px 4px 0 0; }
+.ayudaTitulo span + span { background: var(--color-rojo-600); border-radius: 0 4px 4px 4px; }
+@media (max-width: 767px) {
+  .ayudaLateral, .paginacionLateral { display: none; }
+  .ayudaMovil { display: block; margin-top: 40px; }
+  .filtros { padding-bottom: 12px; }
+}

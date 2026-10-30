@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Caveat } from "next/font/google";
 import { MapPin, MessageCircle, ArrowRight } from "lucide-react";
 import { Boton } from "@/componentes/ui";
@@ -22,8 +23,16 @@ export default function PaginaContacto() {
           <h1 id="titulo-contacto">¿En qué<br />te ayudamos?</h1>
           <p className={styles.bajada}>Cuéntanos qué necesitas.<br />Lo vemos contigo.</p>
           <div className={styles.acciones}>
-            {saludo ? <Boton como="a" href={saludo} target="_blank" rel="noopener noreferrer" tamano="lg"><MessageCircle size={25} aria-hidden />Hablemos por WhatsApp</Boton> : <><Boton disabled aria-describedby="canal-pendiente" tamano="lg"><MessageCircle size={25} aria-hidden />Hablemos por WhatsApp</Boton><p id="canal-pendiente" className={styles.pendiente}>Canal por confirmar. Mientras tanto, prepara tu pedido y compártelo con tu vendedor habitual.</p></>}
-            <BotonEditorial href="/catalogo">Preparar mi pedido</BotonEditorial>
+            {/* Mientras no esté el número, la acción principal es la que sí funciona
+                —armar el pedido— y WhatsApp se anuncia como lo que viene. Un botón
+                rojo deshabilitado se leía como una página rota. */}
+            {saludo ? <>
+              <Boton como="a" href={saludo} target="_blank" rel="noopener noreferrer" tamano="lg"><MessageCircle size={25} aria-hidden />Hablemos por WhatsApp</Boton>
+              <BotonEditorial href="/catalogo">Preparar mi pedido</BotonEditorial>
+            </> : <>
+              <Boton como={Link} href="/catalogo" tamano="lg">Arma tu pedido <ArrowRight size={22} aria-hidden /></Boton>
+              <p className={styles.pendiente}><MessageCircle size={20} aria-hidden /><span><strong>Muy pronto, por WhatsApp.</strong> Mientras tanto, arma tu pedido aquí, cópialo y envíaselo a tu vendedor de siempre.</span></p>
+            </>}
           </div>
           <p className={`${styles.firmaHero} ${manuscrita.className}`}>De persona<br />a persona.</p>
         </div>
@@ -34,7 +43,7 @@ export default function PaginaContacto() {
           <h2 id="titulo-cobertura">¿Llegamos<br />a tu <span className={styles.amarillo}>barrio?</span></h2>
           <p className={styles.comunas}>Pudahuel · Lo Prado · Estación Central</p>
           <p>Estamos cerca de los negocios de barrio: almacenes, minimarkets y botillerías. Si tu negocio está en otra ubicación, cuéntanos y revisamos la cobertura contigo.</p>
-          {cobertura ? <BotonEditorial href={cobertura} icono="ubicacion">Consulta por otra ubicación</BotonEditorial> : <details className={styles.consulta}><summary>Consulta por otra ubicación <ArrowRight size={20} aria-hidden /></summary><p>Indica la comuna y dirección de tu negocio a tu vendedor habitual para confirmar la cobertura y coordinar la entrega. El canal directo del sitio estará disponible cuando confirmemos el número.</p></details>}
+          {cobertura ? <BotonEditorial href={cobertura} icono="ubicacion">Consulta por otra ubicación</BotonEditorial> : <details className={styles.consulta}><summary>Consulta por otra ubicación <ArrowRight size={20} aria-hidden /></summary><p>Cuéntale a tu vendedor de siempre la comuna y la dirección de tu negocio: él te confirma si llegamos y coordina la entrega contigo. Muy pronto también podrás consultarlo aquí por WhatsApp.</p></details>}
           <div className={styles.firma}><MapPin size={48} strokeWidth={1.4} aria-hidden /><p className={manuscrita.className}>Mismas personas.<br />Más barrios.</p></div>
         </div>
         <div className={styles.fotoBarrio}><Image src="/inicio/barrio.webp" alt="Imagen ilustrativa de un almacén de barrio en Santiago" fill sizes="(max-width: 767px) 100vw, 58vw" draggable={false} /></div>

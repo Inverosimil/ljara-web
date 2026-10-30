@@ -27,3 +27,9 @@
 @media (prefers-reduced-motion: no-preference) { .quitar, .cerrar, .cantidad button { transition: background-color 160ms,color 160ms,transform 160ms; } .quitar:hover svg { transform: scale(1.1); } .cantidad button:active { transform: scale(.93); } }
 @media(max-width:420px) { .encabezado { padding: 18px; } .lista { padding-inline: 14px; } .fila { grid-template-columns: 44px minmax(0,1fr) 112px; gap: 9px; } .descripcion h3 { font-size: 14px; } .cantidad { width: 112px; } .cantidad button { width: 36px; } .cantidad input { width: 40px; } .pie { padding: 16px; } }
 @media(max-height:650px) { .encabezado { padding-block: 12px; } .pie { padding-block: 12px; } }
+
+/* Mínimos legibles: las instrucciones y los enlaces del pie estaban a 12–13 px. */
+.descripcion p { font-size: 14px; }
+.utilidades { font-size: 13px; }
+.aviso { font-size: 14px; }
+.pie button { font-size: 15px; }

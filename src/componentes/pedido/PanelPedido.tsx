@@ -204,7 +204,7 @@ export function PanelPedido() {
                     <div className={styles.foto}>
                       {((l.producto as typeof l.producto & { imagenes?: { url: string; alt: string }[] }).imagenes?.[0]) ? <Image src={(l.producto as typeof l.producto & { imagenes: { url: string; alt: string }[] }).imagenes[0].url} alt="" fill sizes="64px" draggable={false} /> : <EnvaseSilueta categoria={l.producto.categoria} envase={l.producto.envase} className="h-16 w-auto" />}
                     </div>
-                    <div className={styles.descripcion}><h3>{l.producto.nombre}</h3><p>{formatoCompleto(l.producto)}</p>{l.formato === "caja" && factor && <p>Caja ×{factor}</p>}</div>
+                    <div className={styles.descripcion}><h3>{l.producto.nombre}</h3>{formatoCompleto(l.producto) !== "—" && <p>{formatoCompleto(l.producto)}</p>}{l.formato === "caja" && factor && <p>Caja × {factor}</p>}</div>
                     <div className={styles.controles}>
                       <ControlCantidad className={styles.cantidad} tamano="sm" valor={l.cantidad} onCambiar={(n) => cambiar(l.id, l.formato, n)} etiqueta={`Cantidad de ${l.producto.nombre}`} minimo={1} />
                       <div className={styles.utilidades}><span>{nombreFormato(l.formato, l.cantidad)}</span><button type="button" className={styles.quitar} aria-label={`Quitar ${l.producto.nombre}`} onClick={() => quitar(l.id, l.formato)}><Trash2 size={18} aria-hidden /></button></div>

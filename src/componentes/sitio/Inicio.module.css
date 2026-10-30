@@ -96,3 +96,8 @@
 
 .termino { border-radius: 5px; box-shadow: none; padding: .03em .12em .08em; margin-inline: -.12em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: background-color 180ms ease, color 180ms ease; }
 @media (prefers-reduced-motion: reduce) { .termino { transition: none; } }
+
+/* Texto corrido legible: a 14 px se perdía frente a titulares de 38 px. */
+.inicio p:not(.nota) { font-size: 16px; line-height: 1.55; }
+.pasos p { color: color-mix(in srgb, var(--color-tinta) 80%, transparent); }
+@media (max-width: 767px) { .inicio p:not(.nota) { font-size: 16px; } }

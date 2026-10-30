@@ -11,7 +11,7 @@
 .detalles { display: grid; grid-template-columns: auto 1fr; gap: 12px 20px; border-top: 1px solid #dedbd5; margin-top: 26px; padding-top: 24px; font-size: 15px; }
 .detalles dd { font-weight: 650; }
 .acciones { margin-top: auto; padding-top: 44px; }
-.acciones > p { font-size: 13px; line-height: 1.5; }
+.acciones > p { font-size: 15px; line-height: 1.5; }
 @media(max-width:767px) { .columnas { grid-template-columns: 1fr; } .foto { height: 260px; } .miniaturas { padding-bottom: 16px; } .miniatura { width: 52px; height: 58px; } .datos { padding: 24px; } .acciones { padding-top: 26px; } }
 .foto > [role="status"] { left: 16px; right: auto; }
 

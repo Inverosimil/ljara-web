@@ -12,7 +12,9 @@
 .acciones > span { max-width: 100%; }
 .acciones button, .acciones span > a { font-family: var(--font-archivo); text-transform: none; font-weight: 750; font-size: clamp(15px, 1.6vw, 20px); }
 .acciones button:disabled { opacity: 1; cursor: not-allowed; }
-.pendiente { color: var(--color-neutro-600, #61666a); font-size: 13px; line-height: 1.4; max-width: 340px; margin-top: -12px; }
+.pendiente { display: flex; gap: 10px; align-items: flex-start; max-width: 380px; margin: 0; padding: 12px 14px; border-radius: 10px; background: var(--color-crema); color: var(--color-neutro-800); font-size: 15px; line-height: 1.45; }
+.pendiente svg { flex-shrink: 0; margin-top: 1px; color: var(--color-rojo-600); }
+.pendiente strong { color: var(--color-tinta); }
 .visual { position: relative; }
 .fotoHero, .fotoBarrio { position: relative; overflow: hidden; border-radius: 12px; }
 .fotoHero { aspect-ratio: .87; }
@@ -30,7 +32,7 @@
 .consulta summary { list-style: none; cursor: pointer; display: inline-flex; gap: 12px; align-items: center; color: var(--color-rojo-600); font-weight: 700; font-size: 17px; }
 .consulta summary::-webkit-details-marker { display: none; }
 .consulta summary:focus-visible { outline: 2px solid var(--color-rojo-500); outline-offset: 5px; }
-.consulta[open] p { margin-top: 16px; font-size: 14px; }
+.consulta[open] p { margin-top: 16px; font-size: 16px; max-width: 420px; }
 @media (hover: hover) { .nota:hover { box-shadow: 1px 8px 18px rgb(0 0 0 / 17%); } }
 @media (prefers-reduced-motion: no-preference) {
  .pagina img { transition: transform 650ms cubic-bezier(.22,1,.36,1); }

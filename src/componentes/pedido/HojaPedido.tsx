@@ -69,9 +69,9 @@ export function HojaPedido() {
                 return <li key={`${l.id}-${l.formato}`} className={styles.fila}>
                   <div className={styles.foto}>{foto ? <Image src={foto.url} alt={foto.alt} fill sizes="110px" draggable={false} /> : <EnvaseSilueta categoria={l.producto.categoria} envase={l.producto.envase} className="h-20 w-auto" />}</div>
                   <div className={styles.detalle}>
-                    <span className={styles.formato}>{l.formato === "caja" && factor ? `Caja × ${factor}` : "Unidad"}</span>
+                    <span className={styles.formato}>{l.formato === "caja" ? (factor ? `Caja × ${factor}` : "Caja") : "Unidad"}</span>
                     <h3>{l.producto.nombre}</h3>
-                    <p>{formatoCompleto(l.producto)}</p>
+                    {formatoCompleto(l.producto) !== "—" && <p>{formatoCompleto(l.producto)}</p>}
                     {l.formato === "caja" && l.unidades !== null && <p>{l.unidades} unidades en total</p>}
                   </div>
                   <div className={styles.controles}>
@@ -90,7 +90,7 @@ export function HojaPedido() {
           <aside className={styles.resumen} aria-label="Preparar y compartir el pedido">
             <div className={styles.datos}>
               <h2>Lo coordinamos contigo.</h2>
-              <p>Estos datos nos ayudan a preparar la conversación.</p>
+              <p>Son opcionales y van dentro del mensaje, para saber de quién es el pedido.</p>
               <label htmlFor="pedido-nombre">Nombre o local <span>(opcional)</span></label>
               <input id="pedido-nombre" placeholder="¿Cómo se llama tu negocio?" autoComplete="organization" maxLength={120} value={datos.nombre} onChange={(e) => actualizarDatos({ nombre: e.target.value })} />
               <label htmlFor="pedido-fecha">Entrega deseada <span>(opcional)</span></label>
@@ -103,7 +103,7 @@ export function HojaPedido() {
               <p className={styles.aviso}>Precio y disponibilidad por confirmar.<br />Sin pedido mínimo.</p>
               {enlace && <Boton como="a" href={enlace} target="_blank" rel="noopener noreferrer" ancho="completo" className={styles.principal}><MessageCircle size={20} aria-hidden />Compartir por WhatsApp</Boton>}
               <Boton variante={enlace ? "papel" : "primario"} ancho="completo" className={styles.principal} onClick={copiar}>{copiado ? <Check size={19} aria-hidden /> : <Copy size={19} aria-hidden />}{copiado ? "Pedido copiado" : "Copiar pedido"}</Boton>
-              <p className={styles.estado} role="status">{errorCopia ? "No pudimos copiarlo. Abre el texto de abajo para seleccionarlo manualmente." : copiado ? "Listo para compartir con tu vendedor." : !enlace ? "WhatsApp aún no está disponible. Copia el pedido y compártelo con tu vendedor habitual." : "Se abrirá WhatsApp para que revises y envíes el mensaje."}</p>
+              <p className={styles.estado} role="status">{errorCopia ? "No pudimos copiarlo. Abre el texto de abajo para seleccionarlo manualmente." : copiado ? "Listo para compartir con tu vendedor." : !enlace ? "Muy pronto podrás enviarlo directo por WhatsApp. Por ahora, cópialo y envíaselo a tu vendedor de siempre." : "Se abrirá WhatsApp para que revises y envíes el mensaje."}</p>
               <details className={styles.mensaje} open={errorCopia || undefined}><summary>Ver texto del pedido</summary><textarea readOnly value={mensaje} rows={10} aria-label="Texto del pedido" /></details>
             </div>
           </aside>

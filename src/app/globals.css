@@ -294,3 +294,8 @@ html.scroll-superpuesto::-webkit-scrollbar { display: none; }
 
 .sitio-publico { --ancho-panel-catalogo: 280px; }
 @media(min-width:768px) and (max-width:1050px) { .sitio-publico { --ancho-panel-catalogo: 230px; } }
+
+/* El pie siempre toca el borde inferior: en una página corta —el pedido vacío—
+ * quedaba flotando a media pantalla con una franja blanca debajo. */
+.sitio-publico { display: flex; flex-direction: column; min-height: 100svh; }
+.sitio-publico > main { flex: 1 0 auto; }

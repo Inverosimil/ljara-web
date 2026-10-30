@@ -140,9 +140,8 @@ export function PieDePagina() {
           <Link href="/contacto"><MessageCircle aria-hidden size={15} />Pedidos y consultas</Link>
           <span><MapPin aria-hidden size={15} />Pudahuel, Santiago</span>
         </div>
-        <div className={styles.credito}><p>desarrollado por <a href="https://scarrasco.com" target="_blank" rel="noopener noreferrer">scarrasco</a></p></div>
       </div>
-      <div className={styles.legal}><span>© {new Date().getFullYear()} {EMPRESA.nombre}. Venta de alcoholes solo a mayores de 18 años.</span><span>Imágenes ilustrativas generadas con IA.</span></div>
+      <div className={styles.legal}><span>© {new Date().getFullYear()} {EMPRESA.nombre}. Venta de alcohol solo a mayores de 18 años.</span><span>Imágenes ilustrativas generadas con IA · Desarrollado por <a href="https://scarrasco.com" target="_blank" rel="noopener noreferrer">scarrasco</a></span></div>
     </footer>
   );
 }
