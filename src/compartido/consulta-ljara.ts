@@ -104,13 +104,23 @@ export class ConsultaLjara<U extends boolean = false> implements PromiseLike<Res
       const where = condiciones.length ? ` WHERE ${condiciones.join(" AND ")}` : "";
       let count: number | null = null; let rows: any[] = [];
       if (this.modo === "select") {
-        if (this.contar) { const r = await this.ejecutar(`SELECT count(*)::int AS total FROM ljara.${ident(this.tabla)} t${where}`, this.valores); count = r.rows[0].total; }
-        if (this.offset > 0 && count !== null && this.offset >= count) return { data: null, error: { code: "PGRST103", message: "Página fuera de rango" }, count };
+        // El total y la página van EN PARALELO: cada consulta es un viaje a la base (~65 ms) y
+        // en serie toda lista paginada pagaba dos. La página se valida contra el total después.
+        const valoresConteo = [...this.valores];
+        const sqlConteo = `SELECT count(*)::int AS total FROM ljara.${ident(this.tabla)} t${where}`;
+        let sqlFilas: string | null = null;
         if (!this.cabecera) {
           const orden = this.ordenes.length ? ` ORDER BY ${this.ordenes.join(", ")}` : "";
           const limite = this.limite !== undefined ? ` LIMIT ${this.valor(this.limite)} OFFSET ${this.valor(this.offset)}` : "";
-          rows = (await this.ejecutar(`SELECT ${s.columnas} FROM ljara.${ident(this.tabla)} t${where}${orden}${limite}`, this.valores)).rows;
+          sqlFilas = `SELECT ${s.columnas} FROM ljara.${ident(this.tabla)} t${where}${orden}${limite}`;
         }
+        const [rConteo, rFilas] = await Promise.all([
+          this.contar ? this.ejecutar(sqlConteo, valoresConteo) : null,
+          sqlFilas ? this.ejecutar(sqlFilas, this.valores) : null,
+        ]);
+        if (rConteo) count = rConteo.rows[0].total;
+        if (this.offset > 0 && count !== null && this.offset >= count) return { data: null, error: { code: "PGRST103", message: "Página fuera de rango" }, count };
+        rows = rFilas?.rows ?? [];
       } else {
         let sql: string;
         const retorno = " RETURNING *";
