@@ -2,9 +2,16 @@
 /** Adaptador privado, limitado al esquema de L.Jara (catálogo y finanzas). No acepta SQL del navegador.
  * Los valores siempre viajan como parámetros; tablas y relaciones tienen lista cerrada. */
 export type Ejecutar = (sql: string, valores: unknown[]) => Promise<{ rows: any[]; rowCount: number | null }>;
-const TABLAS = new Set(["producto", "marca", "categoria", "formato", "codigo_barra", "imagen", "sello", "perfil", "cambio", "costo", "precio", "tasa_ila", "ubicacion", "movimiento", "existencia", "conteo", "conteo_linea", "importacion", "rechazo", "conteo_categoria",
+const TABLAS = new Set(["producto", "marca", "categoria", "formato", "codigo_barra", "imagen", "sello", "perfil", "costo", "precio", "tasa_ila", "ubicacion", "movimiento", "existencia", "conteo", "conteo_linea", "importacion", "rechazo", "conteo_categoria",
   "contraparte", "cuenta_dinero", "documento", "movimiento_dinero", "aplicacion",
-  "documento_estado", "movimiento_estado", "saldo_cuenta", "cuenta_corriente", "flujo_mensual", "calendario_vencimiento"]);
+  "distribuidor", "fabricante", "adjunto",
+  "operacion_stock", "stock_producto",
+  "impuesto_adicional", "lista_precio", "precio_lista",
+  "contraparte_codigo", "contraparte_direccion", "contraparte_bloqueo", "facturacion_mensual",
+  "documento_linea", "nota_credito", "nota_credito_linea", "cheque",
+  "venta_linea", "cliente_resumen", "stock_autoventa",
+  "documento_estado", "movimiento_estado", "saldo_cuenta", "cuenta_corriente", "flujo_mensual", "calendario_vencimiento",
+  "categoria_gasto", "gasto_mensual"]);
 const ESQUEMAS = new Set(["ljara"]);
 const ident = (s: string) => { if (!/^[a-z_][a-z0-9_]*$/.test(s)) throw new Error("Identificador no permitido"); return `"${s}"`; };
 type Relacion = { tabla: string; local: string; remota: string; lista: boolean };
@@ -12,22 +19,84 @@ const RELACIONES: Record<string, Record<string, Relacion>> = {
   producto: {
     marca: { tabla: "marca", local: "marca_id", remota: "id", lista: false },
     categoria: { tabla: "categoria", local: "categoria_id", remota: "id", lista: false },
+    distribuidor: { tabla: "distribuidor", local: "distribuidor_id", remota: "id", lista: false },
+    fabricante: { tabla: "fabricante", local: "fabricante_id", remota: "id", lista: false },
+    ubicacion: { tabla: "ubicacion", local: "ubicacion_id", remota: "id", lista: false },
+    impuesto: { tabla: "impuesto_adicional", local: "impuesto_codigo", remota: "codigo", lista: false },
     formato: { tabla: "formato", local: "id", remota: "producto_id", lista: true },
     imagen: { tabla: "imagen", local: "id", remota: "producto_id", lista: true },
+    sello: { tabla: "sello", local: "id", remota: "producto_id", lista: true },
   },
   formato: { codigo_barra: { tabla: "codigo_barra", local: "id", remota: "formato_id", lista: true },
     producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false } },
+  // Inventario (0033).
+  movimiento: {
+    producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false },
+    ubicacion: { tabla: "ubicacion", local: "ubicacion_id", remota: "id", lista: false },
+    operacion: { tabla: "operacion_stock", local: "operacion_id", remota: "id", lista: false },
+  },
+  operacion_stock: {
+    ubicacion: { tabla: "ubicacion", local: "ubicacion_id", remota: "id", lista: false },
+    destino: { tabla: "ubicacion", local: "ubicacion_destino_id", remota: "id", lista: false },
+    distribuidor: { tabla: "distribuidor", local: "distribuidor_id", remota: "id", lista: false },
+    movimiento: { tabla: "movimiento", local: "id", remota: "operacion_id", lista: true },
+  },
+  existencia: {
+    producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false },
+    ubicacion: { tabla: "ubicacion", local: "ubicacion_id", remota: "id", lista: false },
+  },
+  stock_producto: { producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false } },
+  conteo: {
+    ubicacion: { tabla: "ubicacion", local: "ubicacion_id", remota: "id", lista: false },
+    conteo_linea: { tabla: "conteo_linea", local: "id", remota: "conteo_id", lista: true },
+  },
+  conteo_linea: { producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false } },
   // Finanzas (0028). Las vistas *_estado llevan las mismas relaciones que su tabla.
   documento: {
     contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false },
+    categoria_gasto: { tabla: "categoria_gasto", local: "categoria_gasto_id", remota: "id", lista: false },
     aplicacion: { tabla: "aplicacion", local: "id", remota: "documento_id", lista: true },
+    linea: { tabla: "documento_linea", local: "id", remota: "documento_id", lista: true },
+    nota_credito: { tabla: "nota_credito", local: "id", remota: "documento_id", lista: true },
   },
   documento_estado: {
     contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false },
     aplicacion: { tabla: "aplicacion", local: "id", remota: "documento_id", lista: true },
+    linea: { tabla: "documento_linea", local: "id", remota: "documento_id", lista: true },
+    nota_credito: { tabla: "nota_credito", local: "id", remota: "documento_id", lista: true },
   },
+  // Lo comercial (0037).
+  contraparte: {
+    lista: { tabla: "lista_precio", local: "lista_precio_id", remota: "id", lista: false },
+    direccion: { tabla: "contraparte_direccion", local: "id", remota: "contraparte_id", lista: true },
+    codigo: { tabla: "contraparte_codigo", local: "id", remota: "contraparte_id", lista: true },
+    bloqueo: { tabla: "contraparte_bloqueo", local: "id", remota: "contraparte_id", lista: true },
+  },
+  precio_lista: {
+    lista: { tabla: "lista_precio", local: "lista_id", remota: "id", lista: false },
+    producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false },
+  },
+  documento_linea: {
+    producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false },
+    documento: { tabla: "documento", local: "documento_id", remota: "id", lista: false },
+  },
+  venta_linea: {
+    producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false },
+    contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false },
+  },
+  nota_credito: {
+    contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false },
+    documento: { tabla: "documento", local: "documento_id", remota: "id", lista: false },
+    linea: { tabla: "nota_credito_linea", local: "id", remota: "nota_credito_id", lista: true },
+  },
+  nota_credito_linea: {
+    producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false },
+  },
+  cheque: { contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false } },
+  stock_autoventa: { producto: { tabla: "producto", local: "producto_id", remota: "id", lista: false } },
   movimiento_dinero: {
     cuenta: { tabla: "cuenta_dinero", local: "cuenta_id", remota: "id", lista: false },
+    categoria_gasto: { tabla: "categoria_gasto", local: "categoria_gasto_id", remota: "id", lista: false },
     contraparte: { tabla: "contraparte", local: "contraparte_id", remota: "id", lista: false },
     aplicacion: { tabla: "aplicacion", local: "id", remota: "movimiento_id", lista: true },
   },
@@ -151,9 +220,26 @@ export function clienteLjara(ejecutar: Ejecutar) {
       try { await ejecutar("SELECT ljara.definir_imagen_principal($1)", [parametros.p_imagen_id]); return { error: null }; }
       catch (e) { return { error: { message: (e as Error).message } }; }
     },
+    /** Quién editó por última vez cada fila y cuándo (0030). Es lo único del historial que ve la
+     * plataforma: el registro completo de `cambio` es interno. */
+    async ultimaEdicion(tabla: string, ids: number[]): Promise<{ data: { fila_id: number; ocurrido_en: string; usuario: string }[] | null; error: { message: string } | null }> {
+      if (!TABLAS.has(tabla)) return { data: null, error: { message: "Tabla fuera de L.Jara" } };
+      try { const r = await ejecutar("SELECT fila_id, ocurrido_en, usuario FROM ljara.ultima_edicion($1, $2::bigint[])", [tabla, ids]); return { data: r.rows.map((x) => ({ fila_id: Number(x.fila_id), ocurrido_en: new Date(x.ocurrido_en).toISOString(), usuario: String(x.usuario) })), error: null }; }
+      catch (e) { return { data: null, error: { message: (e as Error).message } }; }
+    },
     /** Registra un movimiento de dinero con sus aplicaciones en una sola transacción (0028). */
     async registrarMovimiento(p: Record<string, unknown>): Promise<{ data: number | null; error: { message: string } | null }> {
       try { const r = await ejecutar("SELECT ljara.registrar_movimiento($1::jsonb) AS id", [JSON.stringify(p)]); return { data: Number(r.rows[0].id), error: null }; }
+      catch (e) { return { data: null, error: { message: (e as Error).message } }; }
+    },
+    /** Crea una venta con sus líneas y, si se pide, su salida de stock, en una sola transacción (0047). */
+    async registrarVenta(p: Record<string, unknown>): Promise<{ data: { id: number; tipo: string; folio: string; neto: number; iva: number; impuesto_adicional: number; total: number; fecha_vencimiento: string; operacion_stock_id: number | null } | null; error: { message: string } | null }> {
+      try { const r = await ejecutar("SELECT ljara.registrar_venta($1::jsonb) AS venta", [JSON.stringify(p)]); return { data: r.rows[0].venta, error: null }; }
+      catch (e) { return { data: null, error: { message: (e as Error).message } }; }
+    },
+    /** Anula una venta creada en la plataforma y deshace su salida de stock si la tuvo (0047). */
+    async anularVenta(id: number, motivo?: string | null): Promise<{ data: { id: number; operacion_reversa_id: number | null } | null; error: { message: string } | null }> {
+      try { const r = await ejecutar("SELECT ljara.anular_venta($1::bigint, $2::text) AS venta", [id, motivo ?? null]); return { data: r.rows[0].venta, error: null }; }
       catch (e) { return { data: null, error: { message: (e as Error).message } }; }
     },
   }; return cliente;
