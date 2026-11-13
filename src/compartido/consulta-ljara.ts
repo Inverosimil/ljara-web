@@ -2,16 +2,28 @@
 /** Adaptador privado, limitado al esquema de L.Jara (catálogo y finanzas). No acepta SQL del navegador.
  * Los valores siempre viajan como parámetros; tablas y relaciones tienen lista cerrada. */
 export type Ejecutar = (sql: string, valores: unknown[]) => Promise<{ rows: any[]; rowCount: number | null }>;
-const TABLAS = new Set(["producto", "marca", "categoria", "formato", "codigo_barra", "imagen", "sello", "perfil", "costo", "precio", "tasa_ila", "ubicacion", "movimiento", "existencia", "conteo", "conteo_linea", "importacion", "rechazo", "conteo_categoria",
-  "contraparte", "cuenta_dinero", "documento", "movimiento_dinero", "aplicacion",
-  "distribuidor", "fabricante", "adjunto",
-  "operacion_stock", "stock_producto",
-  "impuesto_adicional", "lista_precio", "precio_lista",
-  "contraparte_codigo", "contraparte_direccion", "contraparte_bloqueo", "facturacion_mensual",
-  "documento_linea", "nota_credito", "nota_credito_linea", "cheque",
-  "venta_linea", "cliente_resumen", "stock_autoventa",
-  "documento_estado", "movimiento_estado", "saldo_cuenta", "cuenta_corriente", "flujo_mensual", "calendario_vencimiento",
-  "categoria_gasto", "gasto_mensual"]);
+/** Tablas y vistas que el adaptador acepta, con el esquema de cada una (ADR-0019, `db/scripts/esquemas-por-dominio.py`).
+ * Una tabla nueva que se consulte desde las apps se agrega aquí con su esquema. */
+const ESQUEMA_DE: Record<string, string> = {
+  // nucleo
+  adjunto: "nucleo",
+  // identidad
+  perfil: "identidad",
+  // auditoria
+  importacion: "auditoria", rechazo: "auditoria",
+  // catalogo
+  producto: "catalogo", marca: "catalogo", categoria: "catalogo", formato: "catalogo", codigo_barra: "catalogo", imagen: "catalogo", sello: "catalogo", tasa_ila: "catalogo", conteo_categoria: "catalogo", distribuidor: "catalogo", fabricante: "catalogo", impuesto_adicional: "catalogo",
+  // inventario
+  ubicacion: "inventario", movimiento: "inventario", existencia: "inventario", conteo: "inventario", conteo_linea: "inventario", operacion_stock: "inventario", stock_producto: "inventario", stock_autoventa: "inventario", calendario_vencimiento: "inventario",
+  // comercial
+  costo: "comercial", precio: "comercial", contraparte: "comercial", documento: "comercial", lista_precio: "comercial", precio_lista: "comercial", contraparte_codigo: "comercial", contraparte_direccion: "comercial", contraparte_bloqueo: "comercial", facturacion_mensual: "comercial", documento_linea: "comercial", nota_credito: "comercial", nota_credito_linea: "comercial", venta_linea: "comercial", cliente_resumen: "comercial", documento_estado: "comercial", cuenta_corriente: "comercial",
+  // finanzas
+  cuenta_dinero: "finanzas", movimiento_dinero: "finanzas", aplicacion: "finanzas", cheque: "finanzas", movimiento_estado: "finanzas", saldo_cuenta: "finanzas", flujo_mensual: "finanzas", categoria_gasto: "finanzas", gasto_mensual: "finanzas",
+};
+const esTabla = (t: string) => Object.hasOwn(ESQUEMA_DE, t);
+/** `esquema."tabla"`, listo para el SQL. */
+const tablaSql = (t: string) => { if (!esTabla(t)) throw new Error("Tabla fuera de L.Jara"); return `${ESQUEMA_DE[t]}.${ident(t)}`; };
+/** `.schema("ljara")` nombra a L.Jara entera, no un esquema de la base: el esquema real sale de ESQUEMA_DE. */
 const ESQUEMAS = new Set(["ljara"]);
 const ident = (s: string) => { if (!/^[a-z_][a-z0-9_]*$/.test(s)) throw new Error("Identificador no permitido"); return `"${s}"`; };
 type Relacion = { tabla: string; local: string; remota: string; lista: boolean };
@@ -127,8 +139,8 @@ function seleccion(tabla: string, campos: string, alias: string): { columnas: st
     const sub = seleccion(r.tabla, camposRelacion, subAlias);
     const enlace = `${subAlias}.${ident(r.remota)} = ${alias}.${ident(r.local)}`;
     const where = [enlace, ...sub.condiciones].join(" AND ");
-    const sql = `SELECT ${sub.columnas} FROM ljara.${ident(r.tabla)} ${subAlias} WHERE ${where}`;
-    if (inner) condiciones.push(`EXISTS (SELECT 1 FROM ljara.${ident(r.tabla)} ${subAlias} WHERE ${where})`);
+    const sql = `SELECT ${sub.columnas} FROM ${tablaSql(r.tabla)} ${subAlias} WHERE ${where}`;
+    if (inner) condiciones.push(`EXISTS (SELECT 1 FROM ${tablaSql(r.tabla)} ${subAlias} WHERE ${where})`);
     return (r.lista ? `COALESCE((SELECT json_agg(x) FROM (${sql}) x), '[]'::json)` : `(SELECT row_to_json(x) FROM (${sql}) x)`) + ` AS ${ident(nombre)}`;
   }).join(", ");
   return { columnas, condiciones };
@@ -139,13 +151,13 @@ export class ConsultaLjara<U extends boolean = false> implements PromiseLike<Res
   private ordenes: string[] = []; private offset = 0; private limite?: number;
   private contar = false; private cabecera = false; private singular = false; private opcional = false;
   private modo = "select"; private datos: Record<string, unknown>[] = []; private devolver = false;
-  constructor(private tabla: string, private ejecutar: Ejecutar) { if (!TABLAS.has(tabla)) throw new Error("Tabla fuera de L.Jara"); }
+  constructor(private tabla: string, private ejecutar: Ejecutar) { if (!esTabla(tabla)) throw new Error("Tabla fuera de L.Jara"); }
   private valor(v: unknown) { this.valores.push(v); return `$${this.valores.length}`; }
   private columna(c: string) {
     const [rel, campo] = c.split(".");
     if (!campo) return `t.${ident(c)}`;
     const r = RELACIONES[this.tabla]?.[rel]; if (!r || r.lista) throw new Error("Filtro de relación no permitido");
-    return `(SELECT r.${ident(campo)} FROM ljara.${ident(r.tabla)} r WHERE r.${ident(r.remota)} = t.${ident(r.local)})`;
+    return `(SELECT r.${ident(campo)} FROM ${tablaSql(r.tabla)} r WHERE r.${ident(r.remota)} = t.${ident(r.local)})`;
   }
   select(campos = "*", opciones?: { count?: string; head?: boolean }) { this.campos = campos; this.contar = opciones?.count === "exact"; this.cabecera = !!opciones?.head; this.devolver = true; return this; }
   eq(c: string, v: unknown) { this.filtros.push(`${this.columna(c)} = ${this.valor(v)}`); return this; }
@@ -176,12 +188,12 @@ export class ConsultaLjara<U extends boolean = false> implements PromiseLike<Res
         // El total y la página van EN PARALELO: cada consulta es un viaje a la base (~65 ms) y
         // en serie toda lista paginada pagaba dos. La página se valida contra el total después.
         const valoresConteo = [...this.valores];
-        const sqlConteo = `SELECT count(*)::int AS total FROM ljara.${ident(this.tabla)} t${where}`;
+        const sqlConteo = `SELECT count(*)::int AS total FROM ${tablaSql(this.tabla)} t${where}`;
         let sqlFilas: string | null = null;
         if (!this.cabecera) {
           const orden = this.ordenes.length ? ` ORDER BY ${this.ordenes.join(", ")}` : "";
           const limite = this.limite !== undefined ? ` LIMIT ${this.valor(this.limite)} OFFSET ${this.valor(this.offset)}` : "";
-          sqlFilas = `SELECT ${s.columnas} FROM ljara.${ident(this.tabla)} t${where}${orden}${limite}`;
+          sqlFilas = `SELECT ${s.columnas} FROM ${tablaSql(this.tabla)} t${where}${orden}${limite}`;
         }
         const [rConteo, rFilas] = await Promise.all([
           this.contar ? this.ejecutar(sqlConteo, valoresConteo) : null,
@@ -197,11 +209,11 @@ export class ConsultaLjara<U extends boolean = false> implements PromiseLike<Res
           if (!this.datos.length) return { data: [], error: null, count: 0 };
           const keys = Object.keys(this.datos[0]);
           const values = this.datos.map(d => `(${keys.map(k => this.valor(d[k] ?? null)).join(",")})`).join(",");
-          sql = `INSERT INTO ljara.${ident(this.tabla)} (${keys.map(ident).join(",")}) VALUES ${values}${retorno}`;
+          sql = `INSERT INTO ${tablaSql(this.tabla)} (${keys.map(ident).join(",")}) VALUES ${values}${retorno}`;
         } else {
           if (!this.filtros.length) throw new Error("Se requiere un filtro para modificar filas");
-          if (this.modo === "delete") sql = `DELETE FROM ljara.${ident(this.tabla)} t${where}${retorno}`;
-          else sql = `UPDATE ljara.${ident(this.tabla)} t SET ${Object.entries(this.datos[0]).map(([k,v]) => `${ident(k)} = ${this.valor(v)}`).join(",")}${where}${retorno}`;
+          if (this.modo === "delete") sql = `DELETE FROM ${tablaSql(this.tabla)} t${where}${retorno}`;
+          else sql = `UPDATE ${tablaSql(this.tabla)} t SET ${Object.entries(this.datos[0]).map(([k,v]) => `${ident(k)} = ${this.valor(v)}`).join(",")}${where}${retorno}`;
         }
         const r = await this.ejecutar(sql, this.valores); rows = this.devolver ? r.rows : []; if (this.contar) count = r.rowCount;
       }
@@ -217,29 +229,29 @@ export function clienteLjara(ejecutar: Ejecutar) {
     from(tabla: string) { return new ConsultaLjara(tabla, ejecutar); },
     async rpc(nombre: string, parametros: { p_imagen_id: number }) {
       if (nombre !== "definir_imagen_principal") throw new Error("Función no permitida");
-      try { await ejecutar("SELECT ljara.definir_imagen_principal($1)", [parametros.p_imagen_id]); return { error: null }; }
+      try { await ejecutar("SELECT catalogo.definir_imagen_principal($1)", [parametros.p_imagen_id]); return { error: null }; }
       catch (e) { return { error: { message: (e as Error).message } }; }
     },
     /** Quién editó por última vez cada fila y cuándo (0030). Es lo único del historial que ve la
      * plataforma: el registro completo de `cambio` es interno. */
     async ultimaEdicion(tabla: string, ids: number[]): Promise<{ data: { fila_id: number; ocurrido_en: string; usuario: string }[] | null; error: { message: string } | null }> {
-      if (!TABLAS.has(tabla)) return { data: null, error: { message: "Tabla fuera de L.Jara" } };
-      try { const r = await ejecutar("SELECT fila_id, ocurrido_en, usuario FROM ljara.ultima_edicion($1, $2::bigint[])", [tabla, ids]); return { data: r.rows.map((x) => ({ fila_id: Number(x.fila_id), ocurrido_en: new Date(x.ocurrido_en).toISOString(), usuario: String(x.usuario) })), error: null }; }
+      if (!esTabla(tabla)) return { data: null, error: { message: "Tabla fuera de L.Jara" } };
+      try { const r = await ejecutar("SELECT fila_id, ocurrido_en, usuario FROM auditoria.ultima_edicion($1, $2::bigint[])", [tabla, ids]); return { data: r.rows.map((x) => ({ fila_id: Number(x.fila_id), ocurrido_en: new Date(x.ocurrido_en).toISOString(), usuario: String(x.usuario) })), error: null }; }
       catch (e) { return { data: null, error: { message: (e as Error).message } }; }
     },
     /** Registra un movimiento de dinero con sus aplicaciones en una sola transacción (0028). */
     async registrarMovimiento(p: Record<string, unknown>): Promise<{ data: number | null; error: { message: string } | null }> {
-      try { const r = await ejecutar("SELECT ljara.registrar_movimiento($1::jsonb) AS id", [JSON.stringify(p)]); return { data: Number(r.rows[0].id), error: null }; }
+      try { const r = await ejecutar("SELECT finanzas.registrar_movimiento($1::jsonb) AS id", [JSON.stringify(p)]); return { data: Number(r.rows[0].id), error: null }; }
       catch (e) { return { data: null, error: { message: (e as Error).message } }; }
     },
     /** Crea una venta con sus líneas y, si se pide, su salida de stock, en una sola transacción (0047). */
     async registrarVenta(p: Record<string, unknown>): Promise<{ data: { id: number; tipo: string; folio: string; neto: number; iva: number; impuesto_adicional: number; total: number; fecha_vencimiento: string; operacion_stock_id: number | null } | null; error: { message: string } | null }> {
-      try { const r = await ejecutar("SELECT ljara.registrar_venta($1::jsonb) AS venta", [JSON.stringify(p)]); return { data: r.rows[0].venta, error: null }; }
+      try { const r = await ejecutar("SELECT comercial.registrar_venta($1::jsonb) AS venta", [JSON.stringify(p)]); return { data: r.rows[0].venta, error: null }; }
       catch (e) { return { data: null, error: { message: (e as Error).message } }; }
     },
     /** Anula una venta creada en la plataforma y deshace su salida de stock si la tuvo (0047). */
     async anularVenta(id: number, motivo?: string | null): Promise<{ data: { id: number; operacion_reversa_id: number | null } | null; error: { message: string } | null }> {
-      try { const r = await ejecutar("SELECT ljara.anular_venta($1::bigint, $2::text) AS venta", [id, motivo ?? null]); return { data: r.rows[0].venta, error: null }; }
+      try { const r = await ejecutar("SELECT comercial.anular_venta($1::bigint, $2::text) AS venta", [id, motivo ?? null]); return { data: r.rows[0].venta, error: null }; }
       catch (e) { return { data: null, error: { message: (e as Error).message } }; }
     },
   }; return cliente;
